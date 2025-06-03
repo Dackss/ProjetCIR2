@@ -1,0 +1,1 @@
+<h2>Détails d'une installation</h2><p>Données à venir...</p>
