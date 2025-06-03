@@ -1,5 +1,1 @@
-<!DOCTYPE html>
-<html>
-<head><meta http-equiv="refresh" content="0; URL='index.php'" /></head>
-<body></body>
-</html>
+<?php require 'routeur.php'; ?>
