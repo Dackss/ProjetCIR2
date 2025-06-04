@@ -1,1 +1,0 @@
-<h2>Résultats</h2><p>Tableau des résultats à venir...</p>
