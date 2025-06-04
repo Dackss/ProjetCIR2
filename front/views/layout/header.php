@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>Énergie Saucisse</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header class="bg-dark text-white p-3">
-    <div class="container d-flex justify-content-between align-items-center">
+<header class="header">
+    <div class="d-flex justify-content-between align-items-center w-100 px-4">
         <div class="d-flex align-items-center">
-            <img src="images/logo1.jpg" alt="logo" style="height:150px;" class="me-3">
+            <img src="images/logo1.jpg" alt="logo" class="header-logo me-3">
             <h1 class="h4 mb-0">Énergie Saucisse</h1>
         </div>
         <nav>

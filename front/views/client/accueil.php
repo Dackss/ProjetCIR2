@@ -5,6 +5,21 @@
         Elle permet d'obtenir des statistiques, de faire des recherches filtrées et de visualiser les données sur une carte interactive.
     </p>
 
+    <div id="carouselPresentation" class="my-5">
+        <div class="carousel-track">
+            <div class="carousel-slide"><img src="images/slide1.png" alt="Slide 1"></div>
+            <div class="carousel-slide"><img src="images/slide4.png" alt="Slide 2"></div>
+            <div class="carousel-slide"><img src="images/slide3.png" alt="Slide 3"></div>
+            <div class="carousel-slide"><img src="images/slide2.png" alt="Slide 3"></div>
+
+        </div>
+    </div>
+
+
+
+
+
+
     <h3 class="text-center mt-5 mb-3">Statistiques</h3>
     <div class="row text-center mx-0">
         <div class="col-md-3 mb-3"><div class="card p-3"><h6>Installations en base</h6><p><?= $nb_installations ?></p></div></div>
@@ -23,4 +38,6 @@
         <a href="index.php?page=recherche" class="btn btn-primary m-2">Recherche</a>
         <a href="index.php?page=carte" class="btn btn-success m-2">Carte</a>
     </div>
+    <script src="js/carousel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </div>
