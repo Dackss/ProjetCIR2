@@ -10,14 +10,27 @@ $filtres = [
     'departement' => $_GET['departement'] ?? null
 ];
 
-$data = $model->getAll($filtres);
+// pagination
+$page = isset($_GET['p']) ? max(1, intval($_GET['p'])) : 1;
+$parPage = 10;
 
+$data = $model->getAllPaginated($filtres, $page, $parPage);
+
+$installations = [
+    'data' => $data['installations'],
+    'total' => $data['total'],
+    'page' => $page,
+    'parPage' => $parPage
+];
+
+// réponse JSON (API)
 if (!empty($_GET['ajax'])) {
     header('Content-Type: application/json');
-    echo json_encode($data);
+    echo json_encode($installations);
     exit;
 }
 
+// affichage HTML
 require_once __DIR__ . '/../../front/views/layout/header.php';
 require_once __DIR__ . '/../../front/views/back-office/installation.php';
 require_once __DIR__ . '/../../front/views/layout/footer.php';

@@ -148,4 +148,80 @@ class InstallationModel {
 
 		return $s;
 	}
+
+    public function getAllPaginated($filtres, $page, $parPage) {
+        $offset = ($page - 1) * $parPage;
+
+        $sql = "
+        SELECT 
+            i.id_installation AS id,
+            i.surface,
+            i.pente,
+            i.orientation_optimum AS orientation
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_Commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_Onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_Panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        WHERE 1=1
+    ";
+
+        $params = [];
+
+        if (!empty($filtres['onduleur'])) {
+            $sql .= " AND mo.nom_marque = :onduleur";
+            $params[':onduleur'] = $filtres['onduleur'];
+        }
+        if (!empty($filtres['panneau'])) {
+            $sql .= " AND mp.nom_marque = :panneau";
+            $params[':panneau'] = $filtres['panneau'];
+        }
+        if (!empty($filtres['departement'])) {
+            $sql .= " AND d.code_departement = :departement";
+            $params[':departement'] = $filtres['departement'];
+        }
+
+        $sql .= " LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $installations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Compte total avec les mêmes filtres
+        $countSql = "
+        SELECT COUNT(*) FROM Installation i
+        JOIN Commune c ON i.code_insee_Commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_Onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_Panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        WHERE 1=1
+    " . str_replace("SELECT", "", strstr($sql, "AND", false)); // réutilise la même clause WHERE
+
+        $countStmt = $this->pdo->prepare($countSql);
+        foreach ($params as $key => $val) {
+            $countStmt->bindValue($key, $val);
+        }
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+
+        return [
+            'installations' => $installations,
+            'total' => $total
+        ];
+    }
+
 }
+
+
+
+

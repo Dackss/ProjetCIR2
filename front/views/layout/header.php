@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Énergie Saucisse</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/footer-header.css">
+    <link rel="stylesheet" href="css/installation.css">
 </head>
+
 <body>
 <header class="header">
     <div class="d-flex justify-content-between align-items-center w-100 px-4">

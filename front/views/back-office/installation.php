@@ -13,7 +13,7 @@
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($installations as $i): ?>
+        <?php foreach ($installations['data'] as $i): ?>
             <tr>
                 <td><?= $i['id'] ?></td>
                 <td><?= $i['surface'] ?></td>
@@ -24,15 +24,25 @@
         </tbody>
     </table>
 
+    <?php
+    $total = $installations['total'];
+    $pageActuelle = $installations['page'];
+    $parPage = $installations['parPage'];
+    $parPage = $installations['parPage'] ?? 10;
+    $totalPages = max(1, ceil($total / $parPage));
+    ?>
     <div class="pagination">
-        <a href="#">‹</a>
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <a class="current" href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">50</a>
-        <a href="#">›</a>
+        <?php if ($pageActuelle > 1): ?>
+            <a href="index.php?page=back-office/installation&p=<?= $pageActuelle - 1 ?>">‹</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="index.php?page=back-office/installation&p=<?= $i ?>" <?= $i == $pageActuelle ? 'class="current"' : '' ?>><?= $i ?></a>
+        <?php endfor; ?>
+
+        <?php if ($pageActuelle < $totalPages): ?>
+            <a href="index.php?page=back-office/installation&p=<?= $pageActuelle + 1 ?>">›</a>
+        <?php endif; ?>
     </div>
     <link rel="stylesheet" href="css/footer-header.css">
     <link rel="stylesheet" href="css/installation.css">
