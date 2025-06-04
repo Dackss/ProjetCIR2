@@ -1,12 +1,11 @@
 <div class="container-fluid px-0">
     <div class="presentation-texte">
-        <h2>Bienvenue sur notre application solaire 🌭</h2>
+        <h2>Bienvenue sur énergie saucisse 🌭</h2>
         <p>
             Cette plateforme vous permet de suivre les installations photovoltaïques chez les particuliers.<br>
             Accédez à des statistiques dynamiques, explorez les données par filtres ou visualisez-les directement sur une carte interactive !
         </p>
     </div>
-
 
     <div id="carouselPresentation" class="my-5">
         <div class="carousel-track">

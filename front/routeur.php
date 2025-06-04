@@ -1,20 +1,27 @@
 <?php
 $page = $_GET['page'] ?? 'client/accueil';
 
-switch ($page) {
-	case 'client/accueil':
-		require_once '../back/controllers/AccueilController.php';
-		break;
-	case 'client/recherche':
-		require_once '../back/controllers/RechercheController.php';
-		break;
-	case 'back/accueil':
-		require_once '../back/controllers/AdminAccueilController.php';
-		break;
-	case 'back/liste':
-		require_once '../back/controllers/AdminListeController.php';
-		break;
+if (
+    strpos($page, 'client/') !== 0 &&
+    strpos($page, 'back/') !== 0 &&
+    strpos($page, 'back-office/') !== 0
+) {
+    $page = 'client/' . $page;
+}
 
-	default:
-		echo "<h1>Page introuvable</h1>";
+switch ($page) {
+    case 'client/accueil':
+        require_once '../back/controllers/AccueilController.php';
+        break;
+    case 'client/recherche':
+        require_once '../back/controllers/RechercheController.php';
+        break;
+    case 'client/carte':
+        require_once '../back/controllers/CarteController.php';
+        break;
+    case 'back-office/installation':
+        require_once '../back/controllers/InstallationController.php';
+        break;
+    default:
+        echo "<h1>Page introuvable</h1>";
 }

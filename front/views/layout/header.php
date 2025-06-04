@@ -17,6 +17,7 @@
             <a href="index.php?page=accueil" class="btn btn-outline-light btn-sm">Accueil</a>
             <a href="index.php?page=recherche" class="btn btn-outline-light btn-sm">Recherche</a>
             <a href="index.php?page=carte" class="btn btn-outline-light btn-sm">Carte</a>
+            <a href="index.php?page=back-office/installation" class="btn btn-outline-light btn-sm">installation admin</a>
         </nav>
     </div>
 </header>
