@@ -1,0 +1,9 @@
+<?php
+require_once __DIR__ . '/../models/InstallationModel.php';
+
+$stats = getStatistiquesAccueil();
+extract($stats);
+
+require_once __DIR__ . '/../../front/views/layout/header.php';
+require_once __DIR__ . '/../../front/views/accueil.php';
+require_once __DIR__ . '/../../front/views/layout/footer.php';

@@ -9,7 +9,7 @@
 <header class="bg-dark text-white p-3">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <img src="image/logo4.jpg" alt="logo" style="height:200px;" class="me-3">
+            <img src="image/logo4.jpg" alt="logo" style="height:150px;" class="me-3">
             <h1 class="h4 mb-0">Énergie Saucisse</h1>
         </div>
         <nav>
