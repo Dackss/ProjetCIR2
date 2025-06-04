@@ -19,4 +19,4 @@
         </nav>
     </div>
 </header>
-<main class="container my-4">
+<main class="container-fluid px-0">

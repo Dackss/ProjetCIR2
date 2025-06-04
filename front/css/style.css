@@ -1,0 +1,55 @@
+/* Layout général */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Header */
+header {
+    background-color: #212529; /* Bootstrap dark */
+    color: white;
+    padding: 1rem 0;
+}
+
+header img {
+    height: 150px;
+    margin-right: 1rem;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+header nav a {
+    margin-left: 0.5rem;
+}
+
+/* Footer */
+footer {
+    background-color: #212529;
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin: 0;
+    width: 100%;
+}
+
+footer img {
+    height: 120px;
+    margin-bottom: 1rem;
+}
+
+footer h5, footer p {
+    margin: 0;
+}
