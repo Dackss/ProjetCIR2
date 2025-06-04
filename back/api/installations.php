@@ -1,13 +1,9 @@
 <?php
-<<<<<<< Updated upstream
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/InstallationModel.php';
-=======
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-header('Content-Type: text/plain');
-
->>>>>>> Stashed changes
 
 header('Content-Type: application/json');
 
@@ -24,7 +20,7 @@ switch ($method) {
 				'panneau' => $_GET['panneau'] ?? null,
 				'departement' => $_GET['departement'] ?? null,
 			];
-			$data = $model->getAll($filtres);
+                        $data = $model->getInstallations($filtres);
 		}
 		echo json_encode($data);
 		break;
