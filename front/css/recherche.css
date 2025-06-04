@@ -1,0 +1,55 @@
+.page-recherche {
+    background: linear-gradient(to bottom right, #fff5d1, #ffe082);
+    padding: 3rem 1rem;
+    border-radius: 24px;
+    margin: 2rem auto;
+    max-width: 800px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    font-family: 'Poppins', sans-serif;
+    color: #3b240b;
+}
+
+.page-recherche h2 {
+    text-align: center;
+    font-size: 2.4rem;
+    color: #7c4d00;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.page-recherche select {
+    font-size: 1.2rem;
+    border-radius: 12px;
+    padding: 0.75rem;
+    border: 2px solid #ffcc80;
+    background-color: #fffde7;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.page-recherche button[type="submit"] {
+    background: linear-gradient(to right, #f4d06f, #ff8811);
+    border: none;
+    color: #3b240b;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    display: block;
+    margin: 1.5rem auto 0;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.page-recherche button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+#resultats {
+    margin-top: 2rem;
+    background: #fff8e1;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
