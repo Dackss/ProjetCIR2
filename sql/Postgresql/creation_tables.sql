@@ -3,12 +3,12 @@ DROP TABLE IF EXISTS Commune CASCADE;
 DROP TABLE IF EXISTS Département CASCADE;
 DROP TABLE IF EXISTS Région CASCADE;
 DROP TABLE IF EXISTS MarquePanneau CASCADE;
+DROP TABLE IF EXISTS ModelePanneau CASCADE;
 DROP TABLE IF EXISTS Panneau CASCADE;
 DROP TABLE IF EXISTS Installateur CASCADE;
-DROP TABLE IF EXISTS Onduleur CASCADE;
 DROP TABLE IF EXISTS ModeleOnduleur CASCADE;
 DROP TABLE IF EXISTS MarqueOnduleur CASCADE;
-DROP TABLE IF EXISTS ModelePanneau CASCADE;
+DROP TABLE IF EXISTS Onduleur CASCADE;
 
 CREATE TABLE Région (
                         id_region TEXT PRIMARY KEY,
@@ -24,8 +24,8 @@ CREATE TABLE Département (
 CREATE TABLE Commune (
                          code_insee TEXT PRIMARY KEY,
                          nom_commune TEXT,
-                         population INT,
-                         code_postal INT,
+                         population INTEGER,
+                         code_postal TEXT,
                          code_departement_Département TEXT REFERENCES Département(code_departement)
 );
 
@@ -41,9 +41,8 @@ CREATE TABLE ModelePanneau (
 
 CREATE TABLE Panneau (
                          id_panneau SERIAL PRIMARY KEY,
-                         modele_panneau TEXT,
-                         id_marque_MarquePanneau INT REFERENCES MarquePanneau(id_marque),
-                         id_modele_ModelePanneau INT REFERENCES ModelePanneau(id_modele)
+                         id_marque_MarquePanneau INTEGER REFERENCES MarquePanneau(id_marque),
+                         id_modele_ModelePanneau INTEGER REFERENCES ModelePanneau(id_modele)
 );
 
 CREATE TABLE Installateur (
@@ -63,27 +62,26 @@ CREATE TABLE ModeleOnduleur (
 
 CREATE TABLE Onduleur (
                           id_onduleur SERIAL PRIMARY KEY,
-                          modele_onduleur TEXT,
-                          id_marque_MarqueOnduleur INT REFERENCES MarqueOnduleur(id_marque),
-                          id_modele_ModeleOnduleur INT REFERENCES ModeleOnduleur(id_modele)
+                          id_marque_MarqueOnduleur INTEGER REFERENCES MarqueOnduleur(id_marque),
+                          id_modele_ModeleOnduleur INTEGER REFERENCES ModeleOnduleur(id_modele)
 );
 
 CREATE TABLE Installation (
                               id_installation SERIAL PRIMARY KEY,
                               date_installation DATE,
-                              nb_panneaux INT,
-                              nb_onduleur INT,
-                              surface DECIMAL(6,2),
-                              puissance DECIMAL(6,2),
-                              latitude DECIMAL(9,6),
-                              longitude DECIMAL(9,6),
-                              pente DECIMAL(4,1),
-                              pente_optimum DECIMAL(4,1),
+                              nb_onduleur INTEGER,
+                              nb_panneaux INTEGER,
+                              surface NUMERIC(6,2),
+                              puissance NUMERIC(6,2),
+                              latitude NUMERIC(9,6),
+                              longitude NUMERIC(9,6),
+                              pente NUMERIC(4,1),
+                              pente_optimum NUMERIC(4,1),
                               orientation SMALLINT,
                               orientation_optimum SMALLINT,
-                              production_pvgis DECIMAL(8,2),
-                              id_onduleur_Onduleur INT REFERENCES Onduleur(id_onduleur),
-                              id_installateur_Installateur INT REFERENCES Installateur(id_installateur),
-                              id_panneau_Panneau INT REFERENCES Panneau(id_panneau),
+                              production_pvgis NUMERIC(8,2),
+                              id_onduleur_Onduleur INTEGER REFERENCES Onduleur(id_onduleur),
+                              id_installateur_Installateur INTEGER REFERENCES Installateur(id_installateur),
+                              id_panneau_Panneau INTEGER REFERENCES Panneau(id_panneau),
                               code_insee_Commune TEXT REFERENCES Commune(code_insee)
 );
