@@ -18,8 +18,8 @@ CREATE TABLE Région (
 CREATE TABLE Département (
                              code_departement VARCHAR(10) PRIMARY KEY,
                              nom_departement VARCHAR(100),
-                             id_region_Région VARCHAR(25),
-                             FOREIGN KEY (id_region_Région) REFERENCES Région(id_region)
+                             id_region VARCHAR(25),
+                             FOREIGN KEY (id_region) REFERENCES Région(id_region)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Commune (
@@ -27,8 +27,8 @@ CREATE TABLE Commune (
                          nom_commune VARCHAR(100),
                          population INT,
                          code_postal INT,
-                         code_departement_Département VARCHAR(10),
-                         FOREIGN KEY (code_departement_Département) REFERENCES Département(code_departement)
+                         code_departement VARCHAR(10),
+                         FOREIGN KEY (code_departement) REFERENCES Département(code_departement)
 ) ENGINE=InnoDB;
 
 CREATE TABLE MarquePanneau (
@@ -44,10 +44,10 @@ CREATE TABLE ModelePanneau (
 CREATE TABLE Panneau (
                          id_panneau INT AUTO_INCREMENT PRIMARY KEY,
                          modele_panneau VARCHAR(100),
-                         id_marque_MarquePanneau INT,
-                         id_modele_ModelePanneau INT,
-                         FOREIGN KEY (id_marque_MarquePanneau) REFERENCES MarquePanneau(id_marque),
-                         FOREIGN KEY (id_modele_ModelePanneau) REFERENCES ModelePanneau(id_modele)
+                         id_marque INT,
+                         id_modele INT,
+                         FOREIGN KEY (id_marque) REFERENCES MarquePanneau(id_marque),
+                         FOREIGN KEY (id_modele) REFERENCES ModelePanneau(id_modele)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Installateur (
@@ -68,10 +68,10 @@ CREATE TABLE ModeleOnduleur (
 CREATE TABLE Onduleur (
                           id_onduleur INT AUTO_INCREMENT PRIMARY KEY,
                           modele_onduleur VARCHAR(100),
-                          id_marque_MarqueOnduleur INT,
-                          id_modele_ModeleOnduleur INT,
-                          FOREIGN KEY (id_marque_MarqueOnduleur) REFERENCES MarqueOnduleur(id_marque),
-                          FOREIGN KEY (id_modele_ModeleOnduleur) REFERENCES ModeleOnduleur(id_modele)
+                          id_marque INT,
+                          id_modele INT,
+                          FOREIGN KEY (id_marque) REFERENCES MarqueOnduleur(id_marque),
+                          FOREIGN KEY (id_modele) REFERENCES ModeleOnduleur(id_modele)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Installation (
@@ -87,14 +87,14 @@ CREATE TABLE Installation (
                               orientation SMALLINT,
                               orientation_optimum SMALLINT,
                               production_pvgis DECIMAL(8,2),
-                              quantite_onduleurs_utilise_onduleur SMALLINT,
-                              id_onduleur_Onduleur INT,
-                              id_installateur_Installateur INT,
-                              quantite_panneaux_utilise_panneau SMALLINT,
-                              id_panneau_Panneau INT,
-                              code_insee_Commune VARCHAR(10),
-                              FOREIGN KEY (id_onduleur_Onduleur) REFERENCES Onduleur(id_onduleur),
-                              FOREIGN KEY (id_installateur_Installateur) REFERENCES Installateur(id_installateur),
-                              FOREIGN KEY (id_panneau_Panneau) REFERENCES Panneau(id_panneau),
-                              FOREIGN KEY (code_insee_Commune) REFERENCES Commune(code_insee)
+                              quantite_onduleurs SMALLINT,
+                              id_onduleur INT,
+                              id_installateur INT,
+                              quantite_panneaux SMALLINT,
+                              id_panneau INT,
+                              code_insee VARCHAR(10),
+                              FOREIGN KEY (id_onduleur) REFERENCES Onduleur(id_onduleur),
+                              FOREIGN KEY (id_installateur) REFERENCES Installateur(id_installateur),
+                              FOREIGN KEY (id_panneau) REFERENCES Panneau(id_panneau),
+                              FOREIGN KEY (code_insee) REFERENCES Commune(code_insee)
 ) ENGINE=InnoDB;

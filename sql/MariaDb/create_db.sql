@@ -1,7 +1,7 @@
-CREATE USER 'projetCIR2'@'localhost' IDENTIFIED BY 'isen';
+CREATE USER 'projetcir2'@'localhost' IDENTIFIED BY 'isen';
 
-CREATE DATABASE projetCIR2 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE projetcir2 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
-GRANT ALL PRIVILEGES ON projetCIR2.* TO 'projetCIR2'@'localhost';
+GRANT ALL PRIVILEGES ON projetcir2.* TO 'projetcir2'@'localhost';
 
 FLUSH PRIVILEGES;

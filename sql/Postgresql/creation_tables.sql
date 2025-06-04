@@ -72,6 +72,7 @@ CREATE TABLE Installation (
                               id_installation SERIAL PRIMARY KEY,
                               date_installation DATE,
                               nb_panneaux INT,
+                              nb_onduleur INT,
                               surface DECIMAL(6,2),
                               puissance DECIMAL(6,2),
                               latitude DECIMAL(9,6),
@@ -81,10 +82,8 @@ CREATE TABLE Installation (
                               orientation SMALLINT,
                               orientation_optimum SMALLINT,
                               production_pvgis DECIMAL(8,2),
-                              quantite_onduleurs_utilise_onduleur SMALLINT,
                               id_onduleur_Onduleur INT REFERENCES Onduleur(id_onduleur),
                               id_installateur_Installateur INT REFERENCES Installateur(id_installateur),
-                              quantite_panneaux_utilise_panneau SMALLINT,
                               id_panneau_Panneau INT REFERENCES Panneau(id_panneau),
                               code_insee_Commune TEXT REFERENCES Commune(code_insee)
 );
