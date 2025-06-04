@@ -1,15 +1,20 @@
 <?php
-$page = $_GET['page'] ?? 'accueil';
-$pagesAutorisees = ['accueil', 'carte', 'recherche', 'resultat', 'detail'];
+$page = $_GET['page'] ?? 'client/accueil';
 
-if (in_array($page, $pagesAutorisees)) {
-    $fichier = '../back/controllers/' . ucfirst($page) . 'Controller.php';
+switch ($page) {
+	case 'client/accueil':
+		require_once '../back/controllers/AccueilController.php';
+		break;
+	case 'client/recherche':
+		require_once '../back/controllers/RechercheController.php';
+		break;
+	case 'back/accueil':
+		require_once '../back/controllers/AdminAccueilController.php';
+		break;
+	case 'back/liste':
+		require_once '../back/controllers/AdminListeController.php';
+		break;
 
-    if (file_exists($fichier)) {
-        require $fichier;
-    } else {
-        echo "Erreur : contrôleur introuvable.";
-    }
-} else {
-    echo "Erreur : page non autorisée.";
+	default:
+		echo "<h1>Page introuvable</h1>";
 }
