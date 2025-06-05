@@ -7,7 +7,7 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     text-align: center;
     color: #3b240b;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'emoji', cursive;
     line-height: 1.6;
 }
 
@@ -102,3 +102,36 @@
     margin: 0;
     color: #3b240b;
 }
+
+@media screen and (max-width: 768px) {
+    .presentation-texte {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .presentation-texte h2 {
+        font-size: 1.8rem;
+    }
+
+    .presentation-texte p {
+        font-size: 1rem;
+    }
+
+    .section-stats h3 {
+        font-size: 1.6rem;
+    }
+
+    .section-stats .card h6 {
+        font-size: 1rem;
+    }
+
+    .section-stats .card p {
+        font-size: 1.3rem;
+    }
+
+    .carousel-slide img {
+        object-fit: contain;
+        max-height: 300px;
+    }
+}
+
