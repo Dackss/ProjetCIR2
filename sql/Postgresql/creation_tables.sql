@@ -11,21 +11,21 @@ DROP TABLE IF EXISTS MarqueOnduleur CASCADE;
 DROP TABLE IF EXISTS Onduleur CASCADE;
 
 CREATE TABLE Région (
-                        id_region TEXT PRIMARY KEY,
+                        id_region INTEGER PRIMARY KEY,
                         nom_region TEXT
 );
 
 CREATE TABLE Département (
                              code_departement TEXT PRIMARY KEY,
                              nom_departement TEXT,
-                             id_region_Région TEXT REFERENCES Région(id_region)
+                             id_region_Région INTEGER REFERENCES Région(id_region)
 );
 
 CREATE TABLE Commune (
                          code_insee TEXT PRIMARY KEY,
                          nom_commune TEXT,
                          population INTEGER,
-                         code_postal TEXT,
+                         code_postal INTEGER,
                          code_departement_Département TEXT REFERENCES Département(code_departement)
 );
 
@@ -71,15 +71,15 @@ CREATE TABLE Installation (
                               date_installation DATE,
                               nb_onduleur INTEGER,
                               nb_panneaux INTEGER,
-                              surface NUMERIC(6,2),
-                              puissance NUMERIC(6,2),
+                              surface NUMERIC(8,2),
+                              puissance NUMERIC(8,2),
                               latitude NUMERIC(9,6),
                               longitude NUMERIC(9,6),
                               pente NUMERIC(4,1),
                               pente_optimum NUMERIC(4,1),
                               orientation SMALLINT,
                               orientation_optimum SMALLINT,
-                              production_pvgis NUMERIC(8,2),
+                              production_pvgis NUMERIC(10,2),
                               id_onduleur_Onduleur INTEGER REFERENCES Onduleur(id_onduleur),
                               id_installateur_Installateur INTEGER REFERENCES Installateur(id_installateur),
                               id_panneau_Panneau INTEGER REFERENCES Panneau(id_panneau),
