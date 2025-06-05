@@ -1,5 +1,6 @@
 sudo apt update
 sudo apt install mariadb-server -y
+sudo service mariadb start
 sudo mariadb -u root
 CREATE USER 'projetCIR2'@'localhost' IDENTIFIED BY 'isen';
 CREATE DATABASE projetCIR2 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
