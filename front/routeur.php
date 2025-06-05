@@ -22,6 +22,11 @@ switch ($page) {
     case 'back-office/installation':
         require_once '../back/controllers/InstallationController.php';
         break;
+    case 'installations_api':
+        require_once __DIR__ . '/../back/api/installations.php';
+        break;
+
+
     default:
         echo "<h1>Page introuvable</h1>";
 }
