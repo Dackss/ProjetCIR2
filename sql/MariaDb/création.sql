@@ -2,13 +2,14 @@ DROP TABLE IF EXISTS Installation;
 DROP TABLE IF EXISTS Commune;
 DROP TABLE IF EXISTS Département;
 DROP TABLE IF EXISTS Région;
-DROP TABLE IF EXISTS MarquePanneau;
 DROP TABLE IF EXISTS Panneau;
 DROP TABLE IF EXISTS Installateur;
 DROP TABLE IF EXISTS Onduleur;
 DROP TABLE IF EXISTS ModeleOnduleur;
 DROP TABLE IF EXISTS MarqueOnduleur;
 DROP TABLE IF EXISTS ModelePanneau;
+DROP TABLE IF EXISTS MarquePanneau;
+
 
 CREATE TABLE Région (
                         id_region VARCHAR(10) PRIMARY KEY,

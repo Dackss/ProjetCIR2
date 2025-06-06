@@ -1,0 +1,30 @@
+:root {
+    --font-principale: 'Poppins', sans-serif;
+    --font-alternative: 'Chewy', cursive;
+    --font-header: 'Orbitron', sans-serif;
+
+    --couleur-fond-primaire: #fff5d1;
+    --couleur-fond-secondaire: #ffe082;
+    --couleur-fond-accent: #ff8811;
+    --couleur-fond-clair: #fff8e1;
+    --couleur-fond-pale: #f4d06f;
+
+    --couleur-texte: #3b240b;
+    --couleur-titre: #7c4d00;
+    --couleur-texte-sombre: #5d3c00;
+    --couleur-texte-clair: #e9ff08;
+
+    --couleur-bouton-ajout: #cfd8dc;
+    --couleur-bouton-ajout-hover: #b0bec5;
+
+    --ombre-legere: 0 4px 10px rgba(0,0,0,0.1);
+    --ombre-moyenne: 0 6px 14px rgba(0,0,0,0.2);
+    --ombre-lourde: 0 10px 20px rgba(0,0,0,0.2);
+    --ombre-carte: 0 8px 18px rgba(0, 0, 0, 0.25);
+    --ombre-presentation: 0 10px 20px rgba(0,0,0,0.3);
+    --ombre-header: 0 2px 30px rgba(0,0,0,0.5);
+
+    --rayon-bord: 24px;
+    --rayon-bouton: 30px;
+    --rayon-image: 16px;
+}
