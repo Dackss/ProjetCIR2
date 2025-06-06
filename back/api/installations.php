@@ -23,13 +23,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"])) {
             $annee = $_GET["annee"] ?? null;
             $departement = $_GET["departement"] ?? null;
 
+            file_put_contents("debug_filtres.txt", "annee=$annee, departement=$departement\n", FILE_APPEND);
+
             if (!$annee || !$departement) {
                 http_response_code(400);
                 echo json_encode(["error" => "Paramètres manquants"]);
                 exit;
             }
 
-            echo json_encode($model->getInstallationsParFiltre($annee, $departement));
+            $installations = $model->getInstallationsParFiltre($annee, $departement);
+            $data = [];
+
+            foreach ($installations as $row) {
+                $data[] = [
+                    'id_installation' => $row['id_installation'],
+                    'localite' => $row['localite'],
+                    'puissance' => $row['puissance'],
+                    'latitude' => $row['latitude'],
+                    'longitude' => $row['longitude']
+                ];
+            }
+
+            echo json_encode($data); // ✅ c'est ici que ça doit s'arrêter
             exit;
 
         case "options_dynamiques":

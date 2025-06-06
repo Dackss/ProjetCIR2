@@ -180,11 +180,11 @@ class InstallationModel {
             i.longitude,
             c.nom_commune AS localite,
             i.puissance
-        FROM `Installation` i
-        JOIN `Commune` c ON i.code_insee_commune = c.code_insee
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_commune = c.code_insee
         WHERE YEAR(i.date_installation) = :annee
           AND LEFT(c.code_postal, 2) = :departement
-    ";
+        ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ":annee" => $annee,
@@ -193,56 +193,52 @@ class InstallationModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     public function getOptionsDynamiques($annee = null, $departement = null) {
-        $params = [];
-        $where = [];
+        $annees = [];
+        $departements = [];
 
-        if ($annee) {
-            $where[] = "YEAR(i.date_installation) = :annee";
-            $params[':annee'] = $annee;
-        }
-
+        // Années valides pour un département
         if ($departement) {
-            $where[] = "LEFT(c.code_postal, 2) = :departement";
-            $params[':departement'] = $departement;
+            $sql = "
+            SELECT DISTINCT YEAR(i.date_installation) as annee
+            FROM Installation i
+            JOIN Commune c ON i.code_insee_commune = c.code_insee
+            WHERE LEFT(c.code_postal, 2) = :departement
+            ORDER BY annee
+            LIMIT 20
+        ";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':departement' => $departement]);
+            $annees = $stmt->fetchAll(PDO::FETCH_COLUMN);
         }
 
-        $whereClause = $where ? "WHERE " . implode(" AND ", $where) : "";
-
-        // années disponibles filtrées
-        $sqlAnnees = "
-        SELECT DISTINCT YEAR(i.date_installation) as annee
-        FROM Installation i
-        JOIN Commune c ON i.code_insee_Commune = c.code_insee
-        $whereClause
-        ORDER BY annee
-        LIMIT 20
-    ";
-
-        $stmtAnnees = $this->pdo->prepare($sqlAnnees);
-        $stmtAnnees->execute($params);
-        $annees = $stmtAnnees->fetchAll(PDO::FETCH_COLUMN);
-
-        // départements disponibles filtrés
-        $sqlDeps = "
-        SELECT DISTINCT LEFT(c.code_postal, 2) as dep
-        FROM Installation i
-        JOIN Commune c ON i.code_insee_commune = c.code_insee
-        $whereClause
-        AND c.code_postal IS NOT NULL
-        ORDER BY dep
-        LIMIT 20
+        // Départements valides pour une année
+        if ($annee) {
+            $sql = "
+            SELECT DISTINCT LEFT(c.code_postal, 2) as dep
+            FROM Installation i
+            JOIN Commune c ON i.code_insee_commune = c.code_insee
+            WHERE YEAR(i.date_installation) = :annee
+              AND c.code_postal IS NOT NULL
+            ORDER BY dep
+            LIMIT 20
         ";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':annee' => $annee]);
+            $departements = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        }
 
-        $stmtDeps = $this->pdo->prepare($sqlDeps);
-        $stmtDeps->execute($params);
-        $departements = $stmtDeps->fetchAll(PDO::FETCH_COLUMN);
+        // Cas initial : aucun filtre
+        if (!$annee && !$departement) {
+            $annees = $this->getAnneesInstallation();
+            $departements = $this->getDepartementsAleatoires();
+        }
 
         return [
             "annees" => $annees,
             "departements" => $departements
         ];
     }
-
 
 }
