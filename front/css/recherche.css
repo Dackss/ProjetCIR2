@@ -53,3 +53,28 @@
     border-radius: 16px;
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 1rem;
+}
+.pagination a {
+    background-color: #fff4d6;
+    padding: 0.4em 0.7em;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #e6a300;
+    color: #a35e00;
+    font-weight: bold;
+}
+.pagination a.current {
+    background-color: #ffbb33;
+    color: black;
+}
+.pagination .ellipsis {
+    padding: 0.4em 0.7em;
+    color: #888;
+}

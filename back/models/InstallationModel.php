@@ -26,7 +26,7 @@ class InstallationModel {
                 c.code_postal
             FROM `Installation` i
             JOIN `Commune` c ON i.code_insee_commune = c.code_insee
-            JOIN `Département` d ON c.code_departement_departement = d.code_departement
+            JOIN `Département` d ON c.code_departement_Département = d.code_departement
             JOIN `Onduleur` o ON i.id_onduleur_onduleur = o.id_onduleur
             JOIN `MarqueOnduleur` mo ON o.id_marque_marqueonduleur = mo.id_marque
             JOIN `Panneau` p ON i.id_panneau_panneau = p.id_panneau
@@ -154,7 +154,6 @@ class InstallationModel {
         ];
     }
 
-
     public function getAnneesInstallation() {
         $sql = "SELECT DISTINCT YEAR(date_installation) AS annee FROM `Installation` ORDER BY annee LIMIT 20";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
@@ -170,7 +169,6 @@ class InstallationModel {
     ";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-
 
     public function getInstallationsParFiltre($annee, $departement) {
         $sql = "
@@ -192,7 +190,6 @@ class InstallationModel {
         ]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     public function getOptionsDynamiques($annee = null, $departement = null) {
         $annees = [];
@@ -237,6 +234,255 @@ class InstallationModel {
 
         return [
             "annees" => $annees,
+            "departements" => $departements
+        ];
+    }
+
+    public function getAllPaginated($filtres = [], $page = 1, $parPage = 10) {
+        $offset = ($page - 1) * $parPage;
+
+        $sql = "
+        SELECT 
+            i.id_installation,
+            DATE_FORMAT(i.date_installation, '%m/%Y') AS date_installation,
+            i.nb_panneaux,
+            i.nb_onduleur,
+            i.surface,
+            i.puissance,
+            i.latitude,
+            i.longitude,
+            i.pente,
+            i.pente_optimum,
+            i.orientation,
+            i.orientation_optimum,
+            i.production_pvgis,
+            c.nom_commune,
+            c.code_postal
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_marqueonduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_marquepanneau = mp.id_marque
+        WHERE 1=1
+    ";
+
+        $params = [];
+
+        if (!empty($filtres['onduleur'])) {
+            $sql .= " AND mo.nom_marque = :onduleur";
+            $params[':onduleur'] = $filtres['onduleur'];
+        }
+        if (!empty($filtres['panneau'])) {
+            $sql .= " AND mp.nom_marque = :panneau";
+            $params[':panneau'] = $filtres['panneau'];
+        }
+        if (!empty($filtres['departement'])) {
+            $sql .= " AND d.code_departement = :departement";
+            $params[':departement'] = $filtres['departement'];
+        }
+
+        $sql .= " ORDER BY i.date_installation DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $installations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // total sans pagination (mêmes filtres)
+        $countSql = "
+        SELECT COUNT(*) FROM Installation i
+        JOIN Commune c ON i.code_insee_commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_marqueonduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_marquepanneau = mp.id_marque
+        WHERE 1=1
+    ";
+
+        if (!empty($filtres['onduleur'])) {
+            $countSql .= " AND mo.nom_marque = :onduleur";
+        }
+        if (!empty($filtres['panneau'])) {
+            $countSql .= " AND mp.nom_marque = :panneau";
+        }
+        if (!empty($filtres['departement'])) {
+            $countSql .= " AND d.code_departement = :departement";
+        }
+
+        $countStmt = $this->pdo->prepare($countSql);
+        foreach ($params as $key => $value) {
+            $countStmt->bindValue($key, $value);
+        }
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+
+        return [
+            'installations' => $installations,
+            'total' => $total
+        ];
+    }
+
+    public function recherche($onduleur, $panneau, $departement, $page = 1, $parPage = 10) {
+        $offset = ($page - 1) * $parPage;
+
+        $sql = "
+        SELECT 
+            DATE_FORMAT(i.date_installation, '%m/%Y') AS date,
+            i.nb_panneaux,
+            i.surface,
+            i.puissance,
+            c.nom_commune AS localisation
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        WHERE 1=1
+    ";
+
+        $params = [];
+        if ($onduleur) {
+            $sql .= " AND mo.nom_marque = :onduleur";
+            $params[':onduleur'] = $onduleur;
+        }
+        if ($panneau) {
+            $sql .= " AND mp.nom_marque = :panneau";
+            $params[':panneau'] = $panneau;
+        }
+        if ($departement) {
+            $sql .= " AND d.code_departement = :departement";
+            $params[':departement'] = $departement;
+        }
+
+        $sql .= " ORDER BY i.date_installation DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Total
+        $countSql = "
+        SELECT COUNT(*) FROM Installation i
+        JOIN Commune c ON i.code_insee_commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        WHERE 1=1
+    ";
+        if ($onduleur) $countSql .= " AND mo.nom_marque = :onduleur";
+        if ($panneau) $countSql .= " AND mp.nom_marque = :panneau";
+        if ($departement) $countSql .= " AND d.code_departement = :departement";
+
+        $countStmt = $this->pdo->prepare($countSql);
+        foreach ($params as $k => $v) $countStmt->bindValue($k, $v);
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+
+        return ['donnees' => $resultats, 'total' => $total];
+    }
+
+    public function getMarquesOnduleurs() {
+        $sql = "SELECT DISTINCT mo.nom_marque 
+                FROM MarqueOnduleur mo 
+                JOIN Onduleur o ON mo.id_marque = o.id_marque_MarqueOnduleur 
+                JOIN Installation i ON o.id_onduleur = i.id_onduleur_Onduleur 
+                LIMIT 20";
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getMarquesPanneaux() {
+        $sql = "SELECT DISTINCT mp.nom_marque 
+                FROM MarquePanneau mp 
+                JOIN Panneau p ON mp.id_marque = p.id_marque_MarquePanneau 
+                JOIN Installation i ON p.id_panneau = i.id_panneau_Panneau 
+                LIMIT 20";
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getTripletsValides($limite = 20) {
+        $sql = "
+        SELECT DISTINCT 
+            mo.nom_marque AS onduleur,
+            mp.nom_marque AS panneau,
+            d.code_departement AS departement
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_Commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_Onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_Panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        ORDER BY RAND()
+        LIMIT :limite
+    ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getOptionsCompatibles($onduleur = null, $panneau = null, $departement = null) {
+        $sql = "
+        SELECT DISTINCT 
+            mo.nom_marque AS onduleur,
+            mp.nom_marque AS panneau,
+            d.code_departement AS departement
+        FROM Installation i
+        JOIN Commune c ON i.code_insee_Commune = c.code_insee
+        JOIN Département d ON c.code_departement_Département = d.code_departement
+        JOIN Onduleur o ON i.id_onduleur_Onduleur = o.id_onduleur
+        JOIN MarqueOnduleur mo ON o.id_marque_MarqueOnduleur = mo.id_marque
+        JOIN Panneau p ON i.id_panneau_Panneau = p.id_panneau
+        JOIN MarquePanneau mp ON p.id_marque_MarquePanneau = mp.id_marque
+        WHERE 1=1
+    ";
+
+        $params = [];
+
+        if ($onduleur) {
+            $sql .= " AND mo.nom_marque = :onduleur";
+            $params[':onduleur'] = $onduleur;
+        }
+        if ($panneau) {
+            $sql .= " AND mp.nom_marque = :panneau";
+            $params[':panneau'] = $panneau;
+        }
+        if ($departement) {
+            $sql .= " AND d.code_departement = :departement";
+            $params[':departement'] = $departement;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Regrouper les valeurs uniques trouvées
+        $onduleurs = array_values(array_unique(array_column($rows, "onduleur")));
+        $panneaux = array_values(array_unique(array_column($rows, "panneau")));
+        $departements = array_values(array_unique(array_column($rows, "departement")));
+
+        // Si aucun filtre actif, on élargit la liste des départements
+        if (!$onduleur && !$panneau && !$departement) {
+            $departements = $this->getDepartementsAleatoires();
+        }
+
+        return [
+            "onduleurs" => $onduleurs,
+            "panneaux" => $panneaux,
             "departements" => $departements
         ];
     }

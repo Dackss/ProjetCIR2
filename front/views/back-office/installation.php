@@ -15,7 +15,7 @@
         <tbody>
         <?php foreach ($installations['data'] as $i): ?>
             <tr>
-                <td><?= $i['id'] ?></td>
+                <td><?= $i['id_installation'] ?></td>
                 <td><?= $i['surface'] ?></td>
                 <td><?= $i['pente'] ?></td>
                 <td><?= $i['orientation'] ?></td>
@@ -27,23 +27,45 @@
     <?php
     $total = $installations['total'];
     $pageActuelle = $installations['page'];
-    $parPage = $installations['parPage'];
     $parPage = $installations['parPage'] ?? 10;
     $totalPages = max(1, ceil($total / $parPage));
     ?>
+
     <div class="pagination">
         <?php if ($pageActuelle > 1): ?>
             <a href="index.php?page=back-office/installation&p=<?= $pageActuelle - 1 ?>">‹</a>
         <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="index.php?page=back-office/installation&p=<?= $i ?>" <?= $i == $pageActuelle ? 'class="current"' : '' ?>><?= $i ?></a>
-        <?php endfor; ?>
+        <?php
+        $pages = [];
+        $pages[] = 1;
+        if ($pageActuelle > 3) $pages[] = '...';
+
+        for ($i = $pageActuelle - 1; $i <= $pageActuelle + 1; $i++) {
+            if ($i > 1 && $i < $totalPages) {
+                $pages[] = $i;
+            }
+        }
+
+        if ($pageActuelle < $totalPages - 2) $pages[] = '...';
+        if ($totalPages > 1) $pages[] = $totalPages;
+
+        $pages = array_unique($pages);
+        foreach ($pages as $p) {
+            if ($p === '...') {
+                echo "<span class='ellipsis'>...</span>";
+            } else {
+                $class = $p == $pageActuelle ? 'class=\"current\"' : '';
+                echo "<a href='index.php?page=back-office/installation&p=$p' $class>$p</a>";
+            }
+        }
+        ?>
 
         <?php if ($pageActuelle < $totalPages): ?>
             <a href="index.php?page=back-office/installation&p=<?= $pageActuelle + 1 ?>">›</a>
         <?php endif; ?>
     </div>
+
     <link rel="stylesheet" href="css/footer-header.css">
     <link rel="stylesheet" href="css/installation.css">
 </div>

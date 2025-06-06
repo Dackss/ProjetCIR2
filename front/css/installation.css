@@ -79,3 +79,31 @@
     color: #7c4d00;
     text-decoration: underline;
 }
+
+.pagination {
+    text-align: center;
+    margin-top: 1em;
+}
+
+.pagination a {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 4px 8px;
+    text-decoration: none;
+    background-color: #f4d06f;
+    border-radius: 4px;
+    color: black;
+    font-weight: bold;
+}
+
+.pagination a.current {
+    background-color: #ff8811;
+    color: white;
+}
+
+.pagination .ellipsis {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 4px 8px;
+    color: #888;
+}

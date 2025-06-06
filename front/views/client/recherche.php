@@ -14,6 +14,7 @@
     </form>
 
     <div id="resultats"></div>
+    <div id="pagination" class="pagination mt-3"></div>
 </div>
 
 <link rel="stylesheet" href="css/footer-header.css">
