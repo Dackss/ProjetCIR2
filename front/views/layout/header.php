@@ -17,10 +17,17 @@
             <h1 class="h4 mb-0">Énergie Saucisse</h1>
         </div>
         <nav>
+<<<<<<< Updated upstream
             <a href="index.php?page=accueil">Accueil</a>
             <a href="index.php?page=recherche">Recherche</a>
             <a href="index.php?page=carte">Carte</a>
             <a href="index.php?page=back-office/installation">Installation admin</a>
+=======
+            <a href="index.php?page=accueil" class="btn btn-outline-light btn-sm">Accueil</a>
+            <a href="index.php?page=recherche" class="btn btn-outline-light btn-sm">Recherche</a>
+            <a href="index.php?page=carte" class="btn btn-outline-light btn-sm">Carte</a>
+            <a href="index.php?page=back-office/connexion" class="btn btn-outline-light btn-sm">Connexion</a>
+>>>>>>> Stashed changes
         </nav>
     </div>
 </header>

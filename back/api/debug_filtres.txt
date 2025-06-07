@@ -57,7 +57,16 @@ annee=2004, departement=14
 annee=2008, departement=14
 annee=2007, departement=27
 annee=2009, departement=12
+<<<<<<< Updated upstream
 annee=2006, departement=42
 annee=1990, departement=75
 annee=2009, departement=10
 annee=2006, departement=42
+=======
+annee=2007, departement=42
+annee=2007, departement=13
+annee=1999, departement=17
+annee=2004, departement=14
+annee=2008, departement=42
+annee=2010, departement=10
+>>>>>>> Stashed changes

@@ -97,3 +97,11 @@ CREATE TABLE Installation (
                               FOREIGN KEY (id_panneau_Panneau) REFERENCES Panneau(id_panneau),
                               FOREIGN KEY (code_insee_Commune) REFERENCES Commune(code_insee)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Admin (
+                       id_admin INT AUTO_INCREMENT PRIMARY KEY,
+                       identifiant VARCHAR(100) NOT NULL UNIQUE,
+                       mot_de_passe VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+

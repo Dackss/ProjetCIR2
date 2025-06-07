@@ -487,4 +487,8 @@ class InstallationModel {
         ];
     }
 
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

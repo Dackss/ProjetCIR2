@@ -160,6 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.preventDefault();
                 if (p !== currentPage) {
                     currentPage = p;
+<<<<<<< Updated upstream
+=======
+                    form.dispatchEvent(new Event("submit"));
+>>>>>>> Stashed changes
                 }
             });
             return a;

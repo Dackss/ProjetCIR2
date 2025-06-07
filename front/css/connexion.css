@@ -1,0 +1,30 @@
+.login-box {
+    background: linear-gradient(to right, #ffe27a, #ffae00);
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 400px;
+    margin: 4rem auto;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    text-align: center;
+    color: #3b240b;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-box h2 {
+    margin-bottom: 1.5rem;
+    color: #7c4d00;
+}
+
+.form-control {
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.btn-primary {
+    background-color: #ff8811;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #e67610;
+}
