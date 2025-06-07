@@ -10,10 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalPages = 1;
     let parPage = 10;
 
+    const TIRAGE_AUTOMATIQUE = false; // ← met sur true si tu veux un tirage
+
+    // remplace resetSelect pour garder le placeholder
     function resetSelect(select) {
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
+        const placeholderText = select.dataset.placeholder || "Tous";
+        select.innerHTML = "";
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = placeholderText;
+        select.appendChild(opt);
     }
 
     function addIfNotExists(select, val) {
@@ -25,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Charge 20 triplets valides et remplit les selects
+    // Charge les triplets et initialise les select
     fetch("../back/api/installations.php?action=triplets_valides")
         .then(res => res.json())
         .then(triplets => {
@@ -41,15 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 addIfNotExists(departementSelect, t.departement);
             });
 
-            const tirage = triplets[Math.floor(Math.random() * triplets.length)];
-            console.log("Triplet tiré :", tirage);
-
-            onduleurSelect.value = tirage.onduleur;
-            panneauSelect.value = tirage.panneau;
-            departementSelect.value = tirage.departement;
-
-            form.dispatchEvent(new Event("submit"));
+            // Aucun tirage automatique ni recherche
         });
+
 
     // Envoie la recherche
     form.addEventListener("submit", e => {
@@ -82,22 +82,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     const currentPanneau = panneauSelect.value;
                     const currentDepartement = departementSelect.value;
 
-                    const refill = (select, valeurs, selected) => {
-                        const firstOption = select.options[0]; // placeholder
+                    function refill(select, valeurs, selected) {
+                        const placeholderText = select.dataset.placeholder || "Tous";
                         select.innerHTML = "";
-                        select.appendChild(firstOption);
+
+                        const opt = document.createElement("option");
+                        opt.value = "";
+                        opt.textContent = placeholderText;
+                        select.appendChild(opt);
+
                         valeurs.forEach(val => {
-                            const opt = document.createElement("option");
-                            opt.value = val;
-                            opt.textContent = val;
-                            select.appendChild(opt);
+                            const option = document.createElement("option");
+                            option.value = val;
+                            option.textContent = val;
+                            select.appendChild(option);
                         });
-                        if (valeurs.includes(selected)) {
-                            select.value = selected;
-                        } else {
-                            select.value = "";
-                        }
-                    };
+
+                        select.value = valeurs.includes(selected) ? selected : "";
+                    }
+
 
                     refill(onduleurSelect, data.onduleurs, currentOnduleur);
                     refill(panneauSelect, data.panneaux, currentPanneau);
@@ -157,7 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.preventDefault();
                 if (p !== currentPage) {
                     currentPage = p;
-                    form.dispatchEvent(new Event("submit"));
                 }
             });
             return a;
