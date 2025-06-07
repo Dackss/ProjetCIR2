@@ -61,3 +61,6 @@ annee=2007, departement=42
 annee=2007, departement=13
 annee=1999, departement=17
 annee=2004, departement=14
+annee=2010, departement=10
+annee=2007, departement=13
+annee=1999, departement=17

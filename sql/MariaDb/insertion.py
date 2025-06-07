@@ -32,6 +32,18 @@ def safe_float(val, maxval=9999.99):
     except:
         return None
 
+def clean(val):
+    """
+    Convertit NaN, 'nan', 'NaN', et pd.NA en None.
+    """
+    if val is None:
+        return None
+    if isinstance(val, float) and pd.isna(val):
+        return None
+    if isinstance(val, str) and val.strip().lower() == 'nan':
+        return None
+    return val
+
 def get_or_create(table, fields, values, id_field=None):
     if id_field is None:
         id_field = f"id_{table}"
@@ -48,12 +60,13 @@ def get_or_create(table, fields, values, id_field=None):
     )
     return cur.lastrowid
 
-# 1. Lecture du CSV d’installations (virgules)
+# 1. Lecture du CSV des installations (virgules)
 df_inst = pd.read_csv("data_clean.csv", dtype=str)
 df_inst = df_inst.where(pd.notnull(df_inst), None)
 
-# Conversion du code postal en entier pour la fusion
+# 1.1. Conversion du code postal en entier pour la fusion
 def to_int_cp(x):
+    x = clean(x)
     if x is None:
         return None
     try:
@@ -67,11 +80,76 @@ df_inst["postal_code_int"] = df_inst["postal_code"].apply(to_int_cp)
 df_com = pd.read_csv("communes-france-2024-limite.csv", sep=';', dtype=str)
 df_com = df_com.where(pd.notnull(df_com), None)
 
-# Conversion du code_postal en entier
+# 2.1. Conversion du code_postal en entier et population en entier
 df_com["code_postal_int"] = df_com["code_postal"].apply(lambda x: int(x) if x is not None else None)
+df_com["population_int"]   = df_com["population"].apply(lambda x: int(x) if x is not None else 0)
 
-# 3. Fusion pour récupérer code_insee, nom_standard, reg_code, reg_nom, dep_code, dep_nom, population
-df = df_inst.merge(
+# 3. Préremplir les tables Région, Département et Commune avec toutes les communes
+for _, row in df_com.iterrows():
+    row = row.where(pd.notnull(row), None)
+
+    code_insee   = clean(row.get("code_insee"))
+    nom_commune  = clean(row.get("nom_standard")) or "non renseigné"
+    population   = clean(row.get("population"))
+    code_postal  = clean(row.get("code_postal"))
+    depart_code  = clean(row.get("dep_code"))
+    nom_dep      = clean(row.get("dep_nom"))
+    region_id    = clean(row.get("reg_code"))
+    nom_region   = clean(row.get("reg_nom"))
+
+    # 3.1. Région
+    if region_id is not None:
+        cur.execute("SELECT id_region FROM Région WHERE id_region = %s", (region_id,))
+        if not cur.fetchone():
+            cur.execute(
+                "INSERT INTO Région (id_region, nom_region) VALUES (%s, %s)",
+                (region_id, nom_region)
+            )
+
+    # 3.2. Département
+    if depart_code is not None:
+        cur.execute(
+            "SELECT code_departement FROM Département WHERE code_departement = %s",
+            (depart_code,)
+        )
+        if not cur.fetchone():
+            cur.execute(
+                """
+                INSERT INTO Département (
+                    code_departement,
+                    nom_departement,
+                    id_region_Région
+                ) VALUES (%s, %s, %s)
+                """,
+                (depart_code, nom_dep, region_id)
+            )
+
+    # 3.3. Commune
+    cur.execute("SELECT code_insee FROM Commune WHERE code_insee = %s", (code_insee,))
+    if not cur.fetchone():
+        cur.execute(
+            """
+            INSERT INTO Commune (
+                code_insee,
+                nom_commune,
+                population,
+                code_postal,
+                code_departement_Département
+            ) VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                code_insee,
+                nom_commune,
+                population,
+                code_postal,
+                depart_code
+            )
+        )
+
+conn.commit()
+
+# 4. Fusion pour associer installations à communes (1 row par CSV row)
+df_merged = df_inst.merge(
     df_com[
         [
             "code_insee",
@@ -88,131 +166,110 @@ df = df_inst.merge(
     right_on="code_postal_int",
     how="left"
 )
+df_merged = df_merged.where(pd.notnull(df_merged), None)
 
-# 4. Boucle d’insertion
-seen_iddocs = set()
+# 5. Boucle d’insertion : une ligne de BDD par ligne de CSV
+for i, row in df_merged.iterrows():
+    row = row.where(pd.notnull(row), None)
 
-for i, row in df.iterrows():
-    # 4.1. Récupérer code_insee
-    code_insee = row.get("code_insee")
-    if pd.isna(code_insee) or code_insee is None:
-        continue
+    # 5.1. Date d'installation
+    mois = clean(row.get("mois_installation"))
+    an = clean(row.get("an_installation"))
+    try:
+        date_install = datetime.strptime(f"{int(an)}-{int(mois):02d}-01", "%Y-%m-%d").date()
+    except:
+        date_install = None
 
-    # 4.2. Récupérer codes et noms région/département
-    region_id  = row.get("reg_code")   # ex. "84"
-    nom_region = row.get("reg_nom")    # ex. "Occitanie"
-    depart_code= row.get("dep_code")   # ex. "01"
-    nom_dep    = row.get("dep_nom")    # ex. "Ain"
+    # 5.2. Comptage des panneaux et onduleurs
+    nb_panneaux = clean(row.get("nb_panneaux"))
+    nb_onduleur = clean(row.get("nb_onduleur"))
 
-    # 4.3. Insertion ou vérif Région
-    cur.execute(
-        "SELECT id_region FROM Région WHERE id_region = %s",
-        (region_id,)
-    )
-    if not cur.fetchone():
-        cur.execute(
-            "INSERT INTO Région (id_region, nom_region) VALUES (%s, %s)",
-            (region_id, nom_region)
-        )
+    # 5.3. Surface
+    surface = safe_float(clean(row.get("surface")))
 
-    # 4.4. Insertion ou vérif Département
-    cur.execute(
-        "SELECT code_departement FROM Département WHERE code_departement = %s",
-        (depart_code,)
-    )
-    if not cur.fetchone():
-        cur.execute(
-            """
-            INSERT INTO Département (
-                code_departement,
-                nom_departement,
-                id_region_Région
-            ) VALUES (%s, %s, %s)
-            """,
-            (depart_code, nom_dep, region_id)
-        )
+    # 5.4. Puissance crête (prendre la valeur du CSV, sans sommation)
+    puissance_w = safe_float(clean(row.get("puissance_crete")))
+    # On convertit en kW pour rester dans une plage raisonnable
+    puissance_insert = round(puissance_w / 1000, 2) if puissance_w is not None else None
 
-    # 4.5. Insertion ou vérif Commune
-    cur.execute(
-        "SELECT code_insee FROM Commune WHERE code_insee = %s",
-        (code_insee,)
-    )
-    if not cur.fetchone():
-        nom_commune = row.get("nom_standard") or "non renseigné"
-        population  = row.get("population")
-        cp_original = row.get("postal_code")  # chaîne, peut être 4 ou 5 chiffres
+    # 5.5. Coordonnées et angles
+    lat = clean(row.get("lat"))
+    lon = clean(row.get("lon"))
+    pente = safe_float(clean(row.get("pente")), maxval=99.9)
+    pente_opt = safe_float(clean(row.get("pente_optimum")), maxval=99.9)
+    try:
+        orientation = int(clean(row.get("orientation")))
+    except:
+        orientation = None
+    try:
+        orientation_opt = int(clean(row.get("orientation_optimum")))
+    except:
+        orientation_opt = None
 
-        cur.execute(
-            """
-            INSERT INTO Commune (
-                code_insee,
-                nom_commune,
-                population,
-                code_postal,
-                code_departement_Département
-            ) VALUES (%s, %s, %s, %s, %s)
-            """,
-            (
-                code_insee,
-                nom_commune,
-                population,
-                cp_original,
-                depart_code
+    # 5.6. Production PVGIS
+    production_pvgis = safe_float(clean(row.get("production_pvgis")))
+
+    # 5.7. Code INSEE + région/département
+    code_insee = clean(row.get("code_insee"))
+    depart_code = clean(row.get("dep_code"))
+    region_id = clean(row.get("reg_code"))
+
+    # Insert Région si nécessaire
+    if region_id is not None:
+        cur.execute("SELECT id_region FROM Région WHERE id_region = %s", (region_id,))
+        if not cur.fetchone():
+            cur.execute(
+                "INSERT INTO Région (id_region, nom_region) VALUES (%s, %s)",
+                (region_id, clean(row.get("reg_nom")))
             )
-        )
 
-    # 4.6. Marques et modèles de panneaux
-    marque_pan  = row.get("panneaux_marque")  or "non renseigné"
-    modele_pan  = row.get("panneaux_modele")  or "non renseigné"
+    # Insert Département si nécessaire
+    if depart_code is not None:
+        cur.execute(
+            "SELECT code_departement FROM Département WHERE code_departement = %s",
+            (depart_code,)
+        )
+        if not cur.fetchone():
+            cur.execute(
+                """
+                INSERT INTO Département (
+                    code_departement,
+                    nom_departement,
+                    id_region_Région
+                ) VALUES (%s, %s, %s)
+                """,
+                (depart_code, clean(row.get("dep_nom")), region_id)
+            )
+
+    # 5.8. Marques et modèles de panneaux
+    marque_pan = clean(row.get("panneaux_marque")) or "non renseigné"
+    modele_pan = clean(row.get("panneaux_modele")) or "non renseigné"
     id_marque_pan = get_or_create("MarquePanneau", ["nom_marque"], [marque_pan], "id_marque")
     id_modele_pan = get_or_create("ModelePanneau", ["nom_modele"], [modele_pan], "id_modele")
-    id_panneau    = get_or_create(
+    id_panneau = get_or_create(
         "Panneau",
         ["modele_panneau", "id_marque_MarquePanneau", "id_modele_ModelePanneau"],
         [modele_pan, id_marque_pan, id_modele_pan],
         "id_panneau"
     )
 
-    # 4.7. Marques et modèles d’onduleurs
-    marque_ondu  = row.get("onduleur_marque") or "non renseigné"
-    modele_ondu  = row.get("onduleur_modele") or "non renseigné"
+    # 5.9. Marques et modèles d’onduleurs
+    marque_ondu = clean(row.get("onduleur_marque")) or "non renseigné"
+    modele_ondu = clean(row.get("onduleur_modele")) or "non renseigné"
     id_marque_ondu = get_or_create("MarqueOnduleur", ["nom_marque"], [marque_ondu], "id_marque")
     id_modele_ondu = get_or_create("ModeleOnduleur", ["nom_modele"], [modele_ondu], "id_modele")
-    id_onduleur    = get_or_create(
+    id_onduleur = get_or_create(
         "Onduleur",
         ["modele_onduleur", "id_marque_MarqueOnduleur", "id_modele_ModeleOnduleur"],
         [modele_ondu, id_marque_ondu, id_modele_ondu],
         "id_onduleur"
     )
 
-    # 4.8. Installateur
-    nom_inst = row.get("installateur") or "non renseigné"
+    # 5.10. Installateur
+    nom_inst = clean(row.get("installateur")) or "non renseigné"
     id_installateur = get_or_create("Installateur", ["nom_installateur"], [nom_inst], "id_installateur")
 
-    # 4.9. Champs numériques et date
-    try:
-        orientation     = int(row.get("orientation"))
-    except:
-        orientation = None
-    try:
-        orientation_opt = int(row.get("orientation_optimum"))
-    except:
-        orientation_opt = None
-
-    try:
-        an   = int(row.get("an_installation"))
-        mois = int(row.get("mois_installation"))
-        date_install = datetime.strptime(f"{an}-{mois:02d}-01", "%Y-%m-%d").date()
-    except:
-        date_install = None
-
-    surface          = safe_float(row.get("surface"))
-    puissance        = safe_float(row.get("puissance_crete"))
-    pente            = safe_float(row.get("pente"), maxval=99.9)
-    pente_opt        = safe_float(row.get("pente_optimum"), maxval=99.9)
-    production_pvgis = safe_float(row.get("production_pvgis"), maxval=999999.99)
-
-    # 4.10. Insertion dans la table Installation
+    # 5.11. Insertion dans la table Installation (1→1 CSV→BDD)
     cur.execute(
         """
         INSERT INTO Installation (
@@ -236,12 +293,12 @@ for i, row in df.iterrows():
         """,
         (
             date_install,
-            row.get("nb_panneaux"),
-            row.get("nb_onduleur"),
+            nb_panneaux,
+            nb_onduleur,
             surface,
-            puissance,
-            row.get("lat"),
-            row.get("lon"),
+            puissance_insert,
+            lat,
+            lon,
             pente,
             pente_opt,
             orientation,
@@ -250,19 +307,16 @@ for i, row in df.iterrows():
             id_onduleur,
             id_installateur,
             id_panneau,
-            code_insee
+            code_insee  # None si pas de correspondance
         )
     )
 
-    # 4.11. Print unique par iddoc (avec numéro de ligne)
-    iddoc = row.get("iddoc")
-    if iddoc not in seen_iddocs:
-        print(
-            f"Ligne {i+1} – iddoc={iddoc} – code_insee={code_insee} – date_install={date_install}"
-        )
-        seen_iddocs.add(iddoc)
+    # Affichage d’une ligne de log pour suivre l’import
+    print(
+        f"Ligne {i+1} – iddoc={clean(row.get('iddoc'))} – code_insee={code_insee} – date_install={date_install}"
+    )
 
-# 5. Commit et fermeture
+# 6. Commit et fermeture
 conn.commit()
 cur.close()
 conn.close()
