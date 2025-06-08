@@ -1,12 +1,13 @@
 <?php
-class InstallationModel {
+class InstallationModel
+{
     private $pdo;
-
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Database::getInstance();
     }
-
-    public function getAll($filtres = []) {
+    public function getAll($filtres = [])
+    {
         $sql = "
             SELECT 
                 i.id_installation,
@@ -55,15 +56,15 @@ class InstallationModel {
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getOne($id) {
+    public function getOne($id)
+    {
         $sql = "SELECT * FROM `Installation` WHERE id_installation = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
-    public function create($data) {
+    public function create($data)
+    {
         $sql = "INSERT INTO `Installation` (
                     date_installation, nb_panneaux, nb_onduleur, surface, puissance,
                     latitude, longitude, pente, pente_optimum, orientation,
@@ -97,8 +98,8 @@ class InstallationModel {
             ':code_insee' => $data['code_insee_Commune']
         ]);
     }
-
-    public function update($id, $data) {
+    public function update($id, $data)
+    {
         $sql = "UPDATE `Installation` SET
                     nb_panneaux = :nb_panneaux,
                     nb_onduleur = :nb_onduleur,
@@ -115,14 +116,14 @@ class InstallationModel {
             ':id' => $id
         ]);
     }
-
-    public function delete($id) {
+    public function delete($id)
+    {
         $sql = "DELETE FROM `Installation` WHERE id_installation = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
-
-    public function getStatistiquesAccueil() {
+    public function getStatistiquesAccueil()
+    {
         return [
             'nb_installations' => $this->pdo->query("SELECT COUNT(*) FROM `Installation`")->fetchColumn(),
 
@@ -153,13 +154,13 @@ class InstallationModel {
             'nb_panneaux' => $this->pdo->query("SELECT COUNT(*) FROM `MarquePanneau`")->fetchColumn()
         ];
     }
-
-    public function getAnneesInstallation() {
+    public function getAnneesInstallation()
+    {
         $sql = "SELECT DISTINCT YEAR(date_installation) AS annee FROM `Installation` ORDER BY annee LIMIT 20";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-
-    public function getDepartementsAleatoires() {
+    public function getDepartementsAleatoires()
+    {
         $sql = "
         SELECT DISTINCT LEFT(code_postal, 2) AS departement
         FROM `Commune`
@@ -169,8 +170,8 @@ class InstallationModel {
     ";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-
-    public function getInstallationsParFiltre($annee, $departement) {
+    public function getInstallationsParFiltre($annee, $departement)
+    {
         $sql = "
         SELECT 
             i.id_installation,
@@ -190,8 +191,8 @@ class InstallationModel {
         ]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getOptionsDynamiques($annee = null, $departement = null) {
+    public function getOptionsDynamiques($annee = null, $departement = null)
+    {
         $annees = [];
         $departements = [];
 
@@ -237,8 +238,8 @@ class InstallationModel {
             "departements" => $departements
         ];
     }
-
-    public function getAllPaginated($filtres = [], $page = 1, $parPage = 10) {
+    public function getAllPaginated($filtres = [], $page = 1, $parPage = 10)
+    {
         $offset = ($page - 1) * $parPage;
 
         $sql = "
@@ -328,8 +329,8 @@ class InstallationModel {
             'total' => $total
         ];
     }
-
-    public function recherche($onduleur, $panneau, $departement, $page = 1, $parPage = 10) {
+    public function recherche($onduleur, $panneau, $departement, $page = 1, $parPage = 10)
+    {
         $offset = ($page - 1) * $parPage;
 
         $sql = "
@@ -394,8 +395,8 @@ class InstallationModel {
 
         return ['donnees' => $resultats, 'total' => $total];
     }
-
-    public function getMarquesOnduleurs() {
+    public function getMarquesOnduleurs()
+    {
         $sql = "SELECT DISTINCT mo.nom_marque 
                 FROM MarqueOnduleur mo 
                 JOIN Onduleur o ON mo.id_marque = o.id_marque_MarqueOnduleur 
@@ -403,8 +404,8 @@ class InstallationModel {
                 LIMIT 20";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-
-    public function getMarquesPanneaux() {
+    public function getMarquesPanneaux()
+    {
         $sql = "SELECT DISTINCT mp.nom_marque 
                 FROM MarquePanneau mp 
                 JOIN Panneau p ON mp.id_marque = p.id_marque_MarquePanneau 
@@ -412,8 +413,8 @@ class InstallationModel {
                 LIMIT 20";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-
-    public function getTripletsValides($limite = 20) {
+    public function getTripletsValides($limite = 20)
+    {
         $sql = "
         SELECT DISTINCT 
             mo.nom_marque AS onduleur,
@@ -434,8 +435,8 @@ class InstallationModel {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getOptionsCompatibles($onduleur = null, $panneau = null, $departement = null) {
+    public function getOptionsCompatibles($onduleur = null, $panneau = null, $departement = null)
+    {
         $sql = "
         SELECT DISTINCT 
             mo.nom_marque AS onduleur,
@@ -486,9 +487,15 @@ class InstallationModel {
             "departements" => $departements
         ];
     }
+    public function verifierConnexionAdmin($identifiant, $mot_de_passe) {
+        $stmt = $this->pdo->prepare("SELECT * FROM Admin WHERE identifiant = :identifiant");
+        $stmt->execute(['identifiant' => $identifiant]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-<<<<<<< Updated upstream
+        if ($admin && $mot_de_passe === $admin['mot_de_passe']) {
+            return true;
+        }
+
+        return false;
+    }
 }
-=======
-}
->>>>>>> Stashed changes

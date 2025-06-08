@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS Onduleur;
 DROP TABLE IF EXISTS ModeleOnduleur;
 DROP TABLE IF EXISTS MarqueOnduleur;
 DROP TABLE IF EXISTS ModelePanneau;
+DROP TABLE IF EXISTS Admin;
 
 CREATE TABLE Région (
                         id_region VARCHAR(10) PRIMARY KEY,

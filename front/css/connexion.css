@@ -21,10 +21,10 @@
 }
 
 .btn-primary {
-    background-color: #ff8811;
-    border: none;
+    background-color: #ff8811 !important;
+    border: none !important;
 }
 
 .btn-primary:hover {
-    background-color: #e67610;
+    background-color: #e67610 !important;
 }

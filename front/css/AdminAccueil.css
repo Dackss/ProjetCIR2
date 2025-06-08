@@ -1,0 +1,67 @@
+body {
+    background-color: #fff8e1;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-header {
+    background: linear-gradient(to right, #ffe27a, #ffae00);
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #3b240b;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.admin-header .btn {
+    position: absolute;
+    right: 1.5rem;
+    top: 2rem;
+}
+
+.admin-content {
+    padding: 3rem 1rem;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.admin-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.admin-card {
+    background: #fffcf2;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 280px;
+    text-align: center;
+    text-decoration: none;
+    color: #3b240b;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    border: 3px solid #ffae00;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+    background-color: #fff3c4;
+}
+
+.admin-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-card p {
+    font-size: 1.1rem;
+}

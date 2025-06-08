@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -8,6 +10,23 @@ require_once __DIR__ . '/../models/InstallationModel.php';
 
 $model = new InstallationModel();
 
+// 🔐 Connexion admin
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["action"]) && $_GET["action"] === "connexion_admin") {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $identifiant = $data['identifiant'] ?? '';
+    $mot_de_passe = $data['mot_de_passe'] ?? '';
+
+    if ($model->verifierConnexionAdmin($identifiant, $mot_de_passe)) {
+        $_SESSION['admin_connecte'] = true;
+        $_SESSION['identifiant'] = $identifiant;
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Identifiants incorrects']);
+    }
+    exit;
+}
+
+// 🔍 Gestion des actions GET spécifiques
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"])) {
     switch ($_GET["action"]) {
         case "select_options":
@@ -59,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"])) {
             echo json_encode($resultat);
             exit;
 
-
         case "triplets_valides":
             $triplets = $model->getTripletsValides();
             echo json_encode($triplets);
@@ -71,11 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"])) {
             $departement = $_GET['departement'] ?? null;
             echo json_encode($model->getOptionsCompatibles($onduleur, $panneau, $departement));
             exit;
-
     }
 }
 
-// Requête standard selon la méthode HTTP
+// 🔄 Requêtes REST standard (CRUD)
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
