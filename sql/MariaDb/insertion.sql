@@ -2,7 +2,7 @@
 -- IMPORT DES COMMUNES
 -- =======================
 
--- Table de staging pour chargement brut du CSV des communes
+-- On crée une table temporaire (staging) pour charger les données brutes
 DROP TABLE IF EXISTS StagingCommune;
 CREATE TABLE StagingCommune (
                                 code_insee VARCHAR(10),
@@ -15,53 +15,69 @@ CREATE TABLE StagingCommune (
                                 population VARCHAR(20)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Chargement du fichier CSV
+-- On charge les données CSV dans la table staging
 LOAD DATA LOCAL INFILE 'communes-france-2024-limite.csv'
     INTO TABLE StagingCommune
     FIELDS TERMINATED BY ';' ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (
-     code_insee, nom_commune, code_region, nom_region,
-     code_departement, nom_departement, code_postal, population
+    IGNORE 1 LINES (
+                    code_insee, nom_commune, code_region, nom_region,
+                    code_departement, nom_departement, code_postal, population
         );
 
--- Nettoyage et insertion dans les vraies tables
+-- On désactive les contraintes de clés étrangères pour permettre les TRUNCATE
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE Commune;
 TRUNCATE TABLE Département;
 TRUNCATE TABLE Région;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Insertion dans Région
+-- On insère les régions uniques
 INSERT IGNORE INTO Région (id_region, nom_region)
 SELECT code_region, MIN(nom_region)
 FROM StagingCommune
 WHERE code_region IS NOT NULL
 GROUP BY code_region;
 
--- Insertion dans Département
+-- On insère les départements
 INSERT IGNORE INTO Département (code_departement, nom_departement, id_region_Région)
 SELECT DISTINCT code_departement, nom_departement, code_region
 FROM StagingCommune
 WHERE code_departement IS NOT NULL AND nom_departement IS NOT NULL AND code_region IS NOT NULL;
 
--- Insertion dans Commune
+-- On insère les communes
 INSERT IGNORE INTO Commune (code_insee, nom_commune, population, code_postal, code_departement_Département)
 SELECT DISTINCT
     code_insee,
     nom_commune,
+
+    -- Nettoyage de la population :
+    -- 1. REGEXP_REPLACE(population, '[^0-9]', '') : supprime tous les caractères non numériques,
+    --    par exemple "12 345 hab." devient "12345".
+    -- 2. CAST(... AS UNSIGNED) : convertit la chaîne obtenue en entier positif (UNSIGNED = sans valeur négative).
+    --    Cela permet de garantir un champ propre même si la donnée initiale contenait du texte ou des symboles.
     CAST(REGEXP_REPLACE(population, '[^0-9]', '') AS UNSIGNED),
+
+    -- Nettoyage du code postal :
+    -- Même principe que ci-dessus :
+    -- 1. On retire tous les caractères non numériques pour ne garder que les chiffres.
+    -- 2. On convertit ensuite la chaîne en entier positif.
+    -- Exemple : "75000-Paris" devient "75000"
     CAST(REGEXP_REPLACE(code_postal, '[^0-9]', '') AS UNSIGNED),
+
+    -- Pas de traitement ici car code_departement est déjà propre dans le fichier.
     code_departement
+
 FROM StagingCommune
+
+-- On filtre les lignes invalides : on ignore celles sans code INSEE ou sans département
 WHERE code_insee IS NOT NULL AND code_departement IS NOT NULL;
 
 -- =======================
 -- IMPORT DES INSTALLATIONS
 -- =======================
 
--- Table de staging pour les installations
+-- Table temporaire pour stocker les données brutes
 DROP TABLE IF EXISTS StagingInstall;
 CREATE TABLE StagingInstall (
                                 id INT,
@@ -100,14 +116,14 @@ CREATE TABLE StagingInstall (
                                 id_installateur INT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Chargement CSV
+-- Chargement brut des données dans la table staging
 LOAD DATA LOCAL INFILE 'data_clean.csv'
     INTO TABLE StagingInstall
     FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES;
 
--- Réinitialisation des tables cibles
+-- On vide les tables de référence pour réinitialisation
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE Installation;
 TRUNCATE TABLE Installateur;
@@ -119,19 +135,29 @@ TRUNCATE TABLE ModeleOnduleur;
 TRUNCATE TABLE MarqueOnduleur;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Création des index pour optimisation
+-- Création des index nécessaires pour optimiser les jointures entre StagingInstall et les autres tables
+-- Utilisé pour retrouver rapidement une commune à partir du nom (locality) et du code postal
 CREATE INDEX idx_staging_postal_locality ON StagingInstall(postal_code, locality);
+-- Permet de filtrer rapidement les lignes de StagingInstall déjà liées à une commune
 CREATE INDEX idx_staging_code_insee_commune ON StagingInstall(code_insee_commune);
+-- Utilisé pour faire correspondre les panneaux de la staging avec les modèles enregistrés
 CREATE INDEX idx_staging_panneau_modele ON StagingInstall(panneaux_modele);
+-- Permet de retrouver les onduleurs dans les jointures avec la table Onduleur
 CREATE INDEX idx_staging_onduleur_modele ON StagingInstall(onduleur_modele);
+-- Utilisé pour associer les installateurs de la staging à ceux de la table principale
 CREATE INDEX idx_staging_installateur_nom ON StagingInstall(installateur);
 
+-- Index sur les tables principales pour accélérer les jointures avec la staging
+-- Sert à faire le lien entre nom de commune + code postal et code INSEE
 CREATE INDEX idx_commune_nom_postal ON Commune(nom_commune, code_postal);
+-- Permet de retrouver un panneau à partir de son modèle
 CREATE INDEX idx_panneau_modele ON Panneau(modele_panneau);
+-- Permet de retrouver un onduleur à partir de son modèle
 CREATE INDEX idx_onduleur_modele ON Onduleur(modele_onduleur);
+-- Permet de retrouver un installateur à partir de son nom
 CREATE INDEX idx_installateur_nom ON Installateur(nom_installateur);
 
--- Insertion dans les tables de référence (marques, modèles, objets)
+-- Remplissage des tables de référence
 INSERT IGNORE INTO MarquePanneau (nom_marque)
 SELECT DISTINCT panneaux_marque FROM StagingInstall WHERE panneaux_marque IS NOT NULL;
 
@@ -159,14 +185,32 @@ FROM StagingInstall si
 INSERT IGNORE INTO Installateur (nom_installateur)
 SELECT DISTINCT installateur FROM StagingInstall WHERE installateur IS NOT NULL;
 
--- Matching des FK manquantes (panneau, onduleur, installateur, commune)
+-- Associe les lignes de StagingInstall à une commune en retrouvant son code INSEE
+-- via le nom de la commune (locality) + le code postal.
 UPDATE StagingInstall si
     JOIN Commune c
-    ON si.locality COLLATE utf8mb4_general_ci = c.nom_commune COLLATE utf8mb4_general_ci
-        AND CAST(si.postal_code AS UNSIGNED) = c.code_postal
+    ON
+        -- Compare le nom de commune de la staging avec celui de la base (insensible à la casse et aux accents)
+        -- COLLATE utf8mb4_general_ci : permet de faire une comparaison plus souple entre strings,
+        -- exemple : "saint-malo" = "Saint-Malo"
+        si.locality COLLATE utf8mb4_general_ci = c.nom_commune COLLATE utf8mb4_general_ci
+
+            -- On convertit le code postal en entier pour comparer avec celui de la table Commune
+            -- si postal_code est vide ou contient des lettres, le CAST échouerait
+            AND CAST(si.postal_code AS UNSIGNED) = c.code_postal
+
+-- On met à jour uniquement les lignes qui n’ont pas encore de code INSEE associé
+-- REGEXP '^[0-9]+$' : on filtre les codes postaux qui ne contiennent que des chiffres
+-- ^    → début de la chaîne
+-- [0-9] → chiffre de 0 à 9
+-- +    → un ou plusieurs chiffres
+-- $    → fin de la chaîne
+-- Exemple : "75000" = OK, "75-000" = ignoré
 SET si.code_insee_commune = c.code_insee
 WHERE si.code_insee_commune IS NULL
-  AND si.locality IS NOT NULL AND si.postal_code REGEXP '^[0-9]+$';
+  AND si.locality IS NOT NULL
+  AND si.postal_code REGEXP '^[0-9]+$'; -- https://fr.wikibooks.org/wiki/MySQL/Regex
+
 
 UPDATE StagingInstall si
     JOIN Panneau p ON si.panneaux_modele = p.modele_panneau
@@ -183,7 +227,7 @@ UPDATE StagingInstall si
 SET si.id_installateur = i.id_installateur
 WHERE si.id_installateur IS NULL;
 
--- Insertion finale dans la table Installation
+-- Insertion finale dans Installation
 INSERT IGNORE INTO Installation (
     date_installation, nb_panneaux, nb_onduleur,
     surface, puissance, latitude, longitude,
@@ -196,44 +240,97 @@ INSERT IGNORE INTO Installation (
     code_insee_Commune
 )
 SELECT
+    -- Construit une vraie DATE SQL à partir de l’année et du mois (issus de deux colonnes séparées)
+    -- CONCAT(..., '-01') : on ajoute le jour "01" pour former une date complète
+    -- LPAD(...) : ajoute un zéro si le mois n’a qu’un chiffre (ex : "5" devient "05")
+    -- STR_TO_DATE(...) : convertit la chaîne finale en type DATE MySQL
     STR_TO_DATE(CONCAT(si.an_installation, '-', LPAD(si.mois_installation, 2, '0'), '-01'), '%Y-%m-%d'),
+
+    -- Données déjà numériques, pas besoin de transformation
     si.nb_panneaux,
     si.nb_onduleur,
+
+    -- Nettoyage de la surface :
+    -- 1. Remplace les virgules par des points pour que MySQL comprenne les décimaux
+    -- 2. Supprime les espaces
+    -- 3. NULLIF(..., '') : si le champ devient vide, retourne NULL pour éviter une erreur
+    -- 4. CAST en DECIMAL(8,2) : max 999999.99
     CAST(NULLIF(REPLACE(REPLACE(si.surface, ',', '.'), ' ', ''), '') AS DECIMAL(8,2)),
+
+    -- Même principe pour la puissance crête (kWc)
     CAST(NULLIF(REPLACE(REPLACE(si.puissance_crete, ',', '.'), ' ', ''), '') AS DECIMAL(8,2)),
+
+    -- Latitude et longitude : nettoyage + conversion en nombre à 6 décimales (type GPS)
     CAST(NULLIF(REPLACE(REPLACE(si.lat, ',', '.'), ' ', ''), '') AS DECIMAL(9,6)),
     CAST(NULLIF(REPLACE(REPLACE(si.lon, ',', '.'), ' ', ''), '') AS DECIMAL(9,6)),
+
+    -- Nettoyage de la pente (exprimée en degrés) + conversion
     CAST(NULLIF(REPLACE(REPLACE(si.pente, ',', '.'), ' ', ''), '') AS DECIMAL(4,1)),
     CAST(NULLIF(REPLACE(REPLACE(si.pente_optimum, ',', '.'), ' ', ''), '') AS DECIMAL(4,1)),
-    CAST(CASE
-             WHEN LOWER(si.orientation) = 'sud' THEN 180
-             WHEN LOWER(si.orientation) = 'nord' THEN 0
-             WHEN LOWER(si.orientation) = 'est' THEN 90
-             WHEN LOWER(si.orientation) = 'ouest' THEN 270
-             WHEN si.orientation REGEXP '^-?[0-9]+$' THEN si.orientation
-             ELSE NULL
-        END AS SIGNED),
-    CAST(CASE
-             WHEN LOWER(si.orientation_optimum) = 'sud' THEN 180
-             WHEN LOWER(si.orientation_optimum) = 'nord' THEN 0
-             WHEN LOWER(si.orientation_optimum) = 'est' THEN 90
-             WHEN LOWER(si.orientation_optimum) = 'ouest' THEN 270
-             WHEN si.orientation_optimum REGEXP '^-?[0-9]+$' THEN si.orientation_optimum
-             ELSE NULL
-        END AS SIGNED),
+
+    -- Traitement de l’orientation :
+    -- Certaines valeurs sont en texte (ex : "sud", "nord"), d’autres sont déjà en angle (ex : "180").
+    -- On traduit les textes en degrés selon la convention suivante :
+    --   - sud    → 180°
+    --   - nord   → 0°
+    --   - est    → 90°
+    --   - ouest  → 270°
+    -- Si la valeur est déjà un angle numérique (ex : "135", "-30"), on le garde tel quel.
+    -- Sinon (ex : "inconnu", vide, etc.), on insère NULL.
+    CAST(
+            CASE
+                -- LOWER(...) rend la valeur insensible à la casse : "SUD", "sud", "Sud" → "sud"
+                WHEN LOWER(si.orientation) = 'sud' THEN 180
+                WHEN LOWER(si.orientation) = 'nord' THEN 0
+                WHEN LOWER(si.orientation) = 'est' THEN 90
+                WHEN LOWER(si.orientation) = 'ouest' THEN 270
+
+                -- REGEXP '^-?[0-9]+$' permet de vérifier si la valeur est un nombre entier :
+                -- ^        : début de la chaîne
+                -- -?       : 0 ou 1 signe moins (valeurs négatives possibles)
+                -- [0-9]+   : une ou plusieurs chiffres
+                -- $        : fin de la chaîne
+                -- Exemple : "180", "-30", "0" = OK / "30.5", "sud", "" = refusé
+                WHEN si.orientation REGEXP '^-?[0-9]+$' THEN si.orientation
+
+                -- Sinon on met NULL
+                ELSE NULL
+                END
+        AS SIGNED -- On convertit explicitement le résultat final en entier signé (type INT avec valeurs négatives autorisées)
+    ),
+    -- Même traitement pour l’orientation optimale
+    CAST(
+            CASE
+                WHEN LOWER(si.orientation_optimum) = 'sud' THEN 180
+                WHEN LOWER(si.orientation_optimum) = 'nord' THEN 0
+                WHEN LOWER(si.orientation_optimum) = 'est' THEN 90
+                WHEN LOWER(si.orientation_optimum) = 'ouest' THEN 270
+                WHEN si.orientation_optimum REGEXP '^-?[0-9]+$' THEN si.orientation_optimum
+                ELSE NULL
+                END
+        AS SIGNED
+    ),
+
+
+    -- Nettoyage + conversion de la production PVGIS (production annuelle estimée en kWh)
     CAST(NULLIF(REPLACE(REPLACE(si.production_pvgis, ',', '.'), ' ', ''), '') AS DECIMAL(8,2)),
+
+    -- Clés étrangères déjà résolues dans la table de staging
     si.id_onduleur,
     si.id_installateur,
     si.id_panneau,
     si.code_insee_commune
+
 FROM StagingInstall si
+
+-- On insère uniquement les lignes pour lesquelles toutes les clés étrangères nécessaires sont déjà connues
 WHERE si.id_onduleur IS NOT NULL
   AND si.id_installateur IS NOT NULL
   AND si.id_panneau IS NOT NULL;
 
--- Ajout de l'admin
+-- Insertion de l'utilisateur admin de base
 INSERT IGNORE INTO Admin (identifiant, mot_de_passe) VALUES ('admin', 'tk78');
 
--- Suppression des tables de staging (nettoyage)
+-- Nettoyage final
 DROP TABLE IF EXISTS StagingCommune;
 DROP TABLE IF EXISTS StagingInstall;
