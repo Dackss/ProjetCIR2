@@ -1,0 +1,76 @@
+DROP TABLE IF EXISTS StagingInstall;
+
+CREATE TABLE StagingInstall (
+                                id INT,
+                                iddoc INT,
+                                mois_installation VARCHAR(2),
+                                an_installation VARCHAR(4),
+                                nb_panneaux INT,
+                                panneaux_marque VARCHAR(255),
+                                panneaux_modele VARCHAR(255),
+                                nb_onduleur INT,
+                                onduleur_marque VARCHAR(255),
+                                onduleur_modele VARCHAR(255),
+                                puissance_crete VARCHAR(20),
+                                surface VARCHAR(20),
+                                pente VARCHAR(10),
+                                pente_optimum VARCHAR(10),
+                                orientation VARCHAR(20),
+                                orientation_optimum VARCHAR(20),
+                                installateur VARCHAR(255),
+                                production_pvgis VARCHAR(20),
+                                lat VARCHAR(20),
+                                lon VARCHAR(20),
+                                country VARCHAR(100),
+                                postal_code VARCHAR(10),
+                                postal_code_suffix VARCHAR(10),
+                                postal_town VARCHAR(255),
+                                locality VARCHAR(255),
+                                administrative_area_level_1 VARCHAR(255),
+                                administrative_area_level_2 VARCHAR(255),
+                                administrative_area_level_3 VARCHAR(255),
+                                administrative_area_level_4 VARCHAR(255),
+                                political VARCHAR(255),
+                                code_insee_commune VARCHAR(10),
+                                id_panneau INT,
+                                id_onduleur INT,
+                                id_installateur INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOAD DATA LOCAL INFILE 'data_clean.csv'
+    INTO TABLE StagingInstall
+    FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (
+     id,
+     iddoc,
+     mois_installation,
+     an_installation,
+     nb_panneaux,
+     panneaux_marque,
+     panneaux_modele,
+     nb_onduleur,
+     onduleur_marque,
+     onduleur_modele,
+     puissance_crete,
+     surface,
+     pente,
+     pente_optimum,
+     orientation,
+     orientation_optimum,
+     installateur,
+     production_pvgis,
+     lat,
+     lon,
+     country,
+     postal_code,
+     postal_code_suffix,
+     postal_town,
+     locality,
+     administrative_area_level_1,
+     administrative_area_level_2,
+     administrative_area_level_3,
+     administrative_area_level_4,
+     political
+        );
