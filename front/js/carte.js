@@ -1,28 +1,37 @@
+// une fois que tout est chargé dans la page
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Referrer = ", document.referrer);
+    const isAdmin = document.getElementById("is-admin") !== null; // vérifie si on est sur page admin
+    const detailPage = isAdmin ? "AdminDetail" : "DetailInstallation"; // choisit le lien détail selon le contexte
 
-    const isAdmin = document.getElementById("is-admin") !== null;
-    const detailPage = isAdmin ? "AdminDetail" : "DetailInstallation";
-
-    const anneeSelect = document.getElementById("annee");
-    const deptSelect = document.getElementById("departement");
-    const form = document.getElementById("filtre-carte");
+    const anneeSelect = document.getElementById("annee"); // select des années
+    const deptSelect = document.getElementById("departement"); // select des départements
+    const form = document.getElementById("filtre-carte"); // formulaire global
 
     if (!form || !anneeSelect || !deptSelect) {
-        console.error("Formulaire ou champs non trouvés.");
+        console.error("Formulaire ou champs non trouvés");
         return;
     }
 
-    // Chargement initial
+    // chargement initial des options (années + départements)
     fetch("../back/api/installations.php?action=select_options")
         .then(res => res.json())
         .then(data => {
+            const optTous = document.createElement("option"); // crée option "Tous"
+            optTous.value = "Tous";
+            optTous.textContent = "Tous";
+            anneeSelect.appendChild(optTous);
+
             data.annees.forEach(annee => {
                 const opt = document.createElement("option");
                 opt.value = annee;
                 opt.textContent = annee;
                 anneeSelect.appendChild(opt);
             });
+
+            const optVide = document.createElement("option"); // crée option "Tous" pour départements
+            optVide.value = "";
+            optVide.textContent = "Tous";
+            deptSelect.appendChild(optVide);
 
             data.departements.forEach(dep => {
                 const opt = document.createElement("option");
@@ -31,78 +40,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 deptSelect.appendChild(opt);
             });
 
-            const anneeInit = anneeSelect.value;
-            const depInit = deptSelect.value;
-            if (anneeInit && depInit) {
-                updateOptions(anneeInit, depInit);
-            }
+            anneeSelect.value = "Tous"; // sélectionne "Tous" par défaut
+            deptSelect.value = "";
         })
         .catch(err => console.error("Erreur chargement des filtres :", err));
 
-    function updateOptions(annee = null, departement = null) {
+    // met à jour les départements si une année précise est choisie
+    function updateOptions(annee) {
+        if (annee === "Tous") return;
+
         const url = new URL("../back/api/installations.php", window.location.href);
         url.searchParams.set("action", "options_dynamiques");
-        if (annee) url.searchParams.set("annee", annee);
-        if (departement) url.searchParams.set("departement", departement);
+        url.searchParams.set("annee", annee);
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (data.annees?.length) {
-                    const current = anneeSelect.value;
-                    anneeSelect.innerHTML = "";
-                    data.annees.forEach(a => {
-                        const opt = document.createElement("option");
-                        opt.value = a;
-                        opt.textContent = a;
-                        anneeSelect.appendChild(opt);
-                    });
-                    if (data.annees.includes(current)) {
-                        anneeSelect.value = current;
-                    }
-                }
+                const current = deptSelect.value;
+                deptSelect.innerHTML = ""; // vide le select
 
-                if (data.departements?.length) {
-                    const current = deptSelect.value;
-                    deptSelect.innerHTML = "";
-                    data.departements.forEach(d => {
-                        const opt = document.createElement("option");
-                        opt.value = d;
-                        opt.textContent = d;
-                        deptSelect.appendChild(opt);
-                    });
-                    if (data.departements.includes(current)) {
-                        deptSelect.value = current;
-                    }
+                const optVide = document.createElement("option");
+                optVide.value = "";
+                optVide.textContent = "Tous";
+                deptSelect.appendChild(optVide);
+
+                data.departements?.forEach(dep => {
+                    const opt = document.createElement("option");
+                    opt.value = dep;
+                    opt.textContent = dep;
+                    deptSelect.appendChild(opt);
+                });
+
+                // garde l’ancien département si encore valide
+                if (data.departements.includes(current)) {
+                    deptSelect.value = current;
+                } else {
+                    deptSelect.value = "";
                 }
             })
             .catch(err => console.error("Erreur options dynamiques :", err));
     }
 
+    // quand on change l’année → on met à jour la liste des départements
     anneeSelect.addEventListener("change", () => {
-        updateOptions(anneeSelect.value, null);
+        updateOptions(anneeSelect.value);
     });
 
-    deptSelect.addEventListener("change", () => {
-        updateOptions(null, deptSelect.value);
-    });
-
+    // génère la carte leaflet avec les marqueurs
     function createMap(data) {
         const mapContainer = document.getElementById("map");
 
         if (window.mapInstance) {
-            window.mapInstance.remove();
+            window.mapInstance.remove(); // détruit ancienne instance si existe
         }
 
-        const map = L.map(mapContainer, { preferCanvas: true });
+        const map = L.map(mapContainer, { preferCanvas: true }); // initialise la carte
         window.mapInstance = map;
 
+        // ajoute fond de carte openstreetmap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
         const bounds = [];
 
+        // place un marqueur pour chaque installation
         data.forEach(install => {
             const lat = parseFloat(install.latitude);
             const lon = parseFloat(install.longitude);
@@ -116,13 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     .bindPopup(`
                         <strong>${lieu}</strong><br>
                         ${puissance}<br>
-                        <a href="index.php?page=${detailPage}&id=${install.id}&from=carte">Voir</a>
+                        <a href="index.php?page=${detailPage}&id=${install.id_installation}&from=client/Carte">Voir détail</a>
                     `);
 
                 bounds.push([lat, lon]);
             }
         });
 
+        // ajuste la vue selon le nombre de points
         if (bounds.length === 1) {
             map.setView(bounds[0], 13);
         } else if (bounds.length > 1) {
@@ -130,29 +133,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 map.fitBounds(bounds, { padding: [20, 20] });
             }, 100);
         } else {
-            map.setView([46.8, 2.4], 6);
+            map.setView([46.8, 2.4], 6); // vue par défaut france
         }
 
-        setTimeout(() => map.invalidateSize(), 200);
+        setTimeout(() => map.invalidateSize(), 200); // force recalcul de la taille après rendu
     }
 
+    // quand le formulaire est soumis → récupère données et affiche carte
     form.addEventListener("submit", e => {
         e.preventDefault();
+
         const annee = anneeSelect.value;
         const dep = deptSelect.value;
 
-        fetch(`../back/api/installations.php?action=filtre&annee=${annee}&departement=${dep}`)
+        const url = new URL("../back/api/installations.php", window.location.href);
+        url.searchParams.set("action", "filtre");
+        url.searchParams.set("annee", annee);
+        if (dep) url.searchParams.set("departement", dep);
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 if (!data?.length) {
-                    alert("Aucune installation trouvée pour cette combinaison.");
+                    alert("Aucune installation trouvée pour cette combinaison");
                     return;
                 }
-                createMap(data);
+                createMap(data); // dessine la carte
             })
             .catch(err => {
                 console.error("Erreur chargement carte :", err);
-                alert("Une erreur est survenue lors du chargement des données.");
+                alert("Une erreur est survenue lors du chargement des données");
             });
     });
+
 });

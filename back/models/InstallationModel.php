@@ -217,7 +217,7 @@ class InstallationModel
     ";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
-    public function getInstallationsParFiltre($annee, $departement)
+    public function getInstallationsParFiltre($annee = null, $departement = null)
     {
         $sql = "
         SELECT 
@@ -228,14 +228,23 @@ class InstallationModel
             i.puissance
         FROM Installation i
         JOIN Commune c ON i.code_insee_commune = c.code_insee
-        WHERE YEAR(i.date_installation) = :annee
-          AND LEFT(c.code_postal, 2) = :departement
-        ";
+        WHERE 1=1
+    ";
+
+        $params = [];
+
+        if ($annee) {
+            $sql .= " AND YEAR(i.date_installation) = :annee";
+            $params[":annee"] = $annee;
+        }
+
+        if ($departement) {
+            $sql .= " AND LEFT(c.code_postal, 2) = :departement";
+            $params[":departement"] = $departement;
+        }
+
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ":annee" => $annee,
-            ":departement" => $departement
-        ]);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getOptionsDynamiques($annee = null, $departement = null)
@@ -369,6 +378,7 @@ class InstallationModel
 
         $sql = "
         SELECT 
+            i.id_installation AS id,
             DATE_FORMAT(i.date_installation, '%m/%Y') AS date,
             i.nb_panneaux,
             i.surface,

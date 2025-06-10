@@ -124,3 +124,41 @@
     }
 }
 
+@media screen and (max-width: 576px) {
+    .page-recherche {
+        padding: 1.5rem 1rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .page-recherche h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+    }
+
+    .form-ligne select,
+    .form-ligne button {
+        height: 50px;
+        font-size: 1rem;
+    }
+
+    #resultats {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .pagination a {
+        font-size: 0.95rem;
+        padding: 0.35em 0.6em;
+    }
+
+    .pagination .ellipsis {
+        padding: 0.35em 0.6em;
+    }
+}
+
+

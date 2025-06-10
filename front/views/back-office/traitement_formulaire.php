@@ -3,12 +3,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// charge accès base et modèle
 require_once __DIR__ . "/../../../back/core/Database.php";
 require_once __DIR__ . "/../../../back/models/InstallationModel.php";
 
 $model = new InstallationModel();
 
-// Fonctions de validation
+
+// filtre un float avec option max absolue et message d’erreur personnalisé
 function filter_float($val, $max = null, &$error = null, $field = '') {
     if (!is_numeric($val)) {
         $error = "Le champ '$field' doit être un nombre décimal.";
@@ -22,6 +24,7 @@ function filter_float($val, $max = null, &$error = null, $field = '') {
     return $f;
 }
 
+// filtre un entier avec vérification stricte (évite les '3.0' ou '3abc')
 function filter_int($val, $max = null, &$error = null, $field = '') {
     if (!is_numeric($val) || intval($val) != $val) {
         $error = "Le champ '$field' doit être un entier.";
@@ -35,8 +38,9 @@ function filter_int($val, $max = null, &$error = null, $field = '') {
     return $i;
 }
 
-$errors = [];
+$errors = []; // stocke les erreurs par champ
 
+// construit le tableau des données avec nettoyage et validation
 $data = [
     "date_installation" => $_POST["date_installation"] ?? null,
     "nb_panneaux" => filter_int($_POST["nb_panneaux"] ?? null, 999, $errors['nb_panneaux'], "Nombre de panneaux"),
@@ -56,10 +60,11 @@ $data = [
     "code_insee" => $_POST["code_insee"] ?? null
 ];
 
-// Retirer les erreurs vides
+// supprime les champs dont l’erreur est vide (filtrage utile pour éviter fausses alertes)
 $errors = array_filter($errors, fn($e) => !empty($e));
 
 if (!empty($errors)) {
+    // en cas d’erreurs → on affiche un retour HTML simple (à styliser si besoin)
     echo "<ul style='color: red'>";
     foreach ($errors as $msg) {
         echo "<li>$msg</li>";
@@ -69,11 +74,13 @@ if (!empty($errors)) {
 }
 
 if ($_POST["action"] === "ajout") {
+    // si échec insertion → message d’erreur brut (à améliorer avec redirection ou retour json)
     if (!$model->create($data)) {
         echo "Erreur lors de l'insertion.";
         exit;
     }
 } elseif ($_POST["action"] === "modifier") {
+    // dans le cas d’une modif → on appelle update avec l’id transmis
     $model->update($_POST["id_installation"], $data);
 }
 

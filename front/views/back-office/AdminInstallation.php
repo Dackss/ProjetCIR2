@@ -30,18 +30,21 @@
         </table>
 
         <?php
+        // données utilisées pour calculer la pagination
         $total = $installations['total'];
         $pageActuelle = $installations['page'];
         $parPage = $installations['parPage'] ?? 10;
-        $totalPages = max(1, ceil($total / $parPage));
+        $totalPages = max(1, ceil($total / $parPage)); // arrondi vers le haut
         ?>
 
+        <!-- pagination dynamique selon le nombre de résultats -->
         <div class="pagination">
             <?php if ($pageActuelle > 1): ?>
                 <a href="index.php?page=back-office/AdminInstallation&p=<?= $pageActuelle - 1 ?>">‹</a>
             <?php endif; ?>
 
             <?php
+            // logique de pagination compacte avec sauts (...) si nécessaire
             $pages = [];
             $pages[] = 1;
             if ($pageActuelle > 3) $pages[] = '...';
@@ -55,7 +58,9 @@
             if ($pageActuelle < $totalPages - 2) $pages[] = '...';
             if ($totalPages > 1) $pages[] = $totalPages;
 
-            $pages = array_unique($pages);
+            $pages = array_unique($pages); // supprime doublons éventuels
+
+            // affiche chaque lien ou saut
             foreach ($pages as $p) {
                 if ($p === '...') {
                     echo "<span class='ellipsis'>...</span>";

@@ -164,3 +164,37 @@ footer p {
         text-align: center;
     }
 }
+
+@media screen and (max-width: 576px) {
+    header h1 {
+        font-size: 2.2rem;
+        padding: 0 0.5rem;
+    }
+
+    header nav {
+        gap: 0.8rem;
+    }
+
+    header nav a {
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+        width: 90%;
+    }
+
+    .header-logo,
+    .footer-logo {
+        height: 50px;
+        max-width: 70px;
+        padding: 4px;
+        border-radius: 10px;
+    }
+
+    footer {
+        padding: 1.5rem 0.5rem;
+    }
+
+    footer h5,
+    footer p {
+        font-size: 0.9rem;
+    }
+}

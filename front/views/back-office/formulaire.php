@@ -1,13 +1,17 @@
 <?php
+// charge modèle et accès base
 require_once __DIR__ . '/../../../back/core/Database.php';
 require_once __DIR__ . '/../../../back/models/InstallationModel.php';
+
 $model = new InstallationModel();
 
+// récupère l'action passée dans l’url : ajout ou modifier (par défaut ajout)
 $action = $_GET['action'] ?? 'ajout';
 $titre = $action === 'modifier' ? "Modifier une installation" : "Ajouter une installation";
 
-// Si pas encore d’ID → liste déroulante
+// si on veut modifier mais qu’aucun id n’a encore été fourni → afficher un formulaire minimal avec champ id
 if ($action === 'modifier' && !isset($_GET['id'])) {
+    // récupère les 100 premières installations pour info si besoin (non utilisé ici)
     $installations = $model->getAllPaginated([], 1, 100)['installations'];
     ?>
     <link rel="stylesheet" href="css/formulaire.css">
@@ -27,10 +31,12 @@ if ($action === 'modifier' && !isset($_GET['id'])) {
         </form>
     </div>
     <?php
-    return;
+    return; // arrête le script ici (on ne va pas plus loin tant qu'on n’a pas l’id)
 }
 
-// Valeurs par défaut
+// si on arrive ici = soit ajout, soit modifier avec un id valide
+
+// valeurs initialisées à vide par défaut (cas d’un ajout)
 $installation = [
     'date_installation' => '',
     'nb_panneaux' => '',
@@ -50,6 +56,7 @@ $installation = [
     'id_panneau_Panneau' => ''
 ];
 
+// si on modifie une installation existante, on remplit le tableau avec les valeurs actuelles
 if ($action === 'modifier' && isset($_GET['id'])) {
     $id = $_GET['id'];
     $installation = $model->getInstallation($id);
@@ -57,7 +64,7 @@ if ($action === 'modifier' && isset($_GET['id'])) {
     $installation['id'] = $id;
 }
 
-// Charger les communes depuis la BDD
+// récupération de la liste des communes pour alimenter la liste déroulante
 $pdo = Database::getInstance();
 $communes = $pdo->query("SELECT code_insee, nom_commune FROM Commune ORDER BY nom_commune")->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -75,6 +82,7 @@ $communes = $pdo->query("SELECT code_insee, nom_commune FROM Commune ORDER BY no
 
         <div class="formulaire-grid">
             <?php
+            // liste des champs et labels à afficher
             $champs = [
                 'date_installation' => 'Date d\'installation',
                 'nb_panneaux' => 'Nombre de panneaux',
@@ -93,6 +101,7 @@ $communes = $pdo->query("SELECT code_insee, nom_commune FROM Commune ORDER BY no
                 'id_panneau_Panneau' => 'ID Panneau'
             ];
 
+            // indique les champs obligatoires à remplir
             $required = ['date_installation', 'nb_panneaux', 'nb_onduleur', 'surface', 'puissance', 'latitude', 'longitude', 'id_onduleur_Onduleur', 'id_installateur_Installateur', 'id_panneau_Panneau', 'code_insee'];
 
             foreach ($champs as $name => $label):
@@ -109,21 +118,15 @@ $communes = $pdo->query("SELECT code_insee, nom_commune FROM Commune ORDER BY no
                 </div>
             <?php endforeach; ?>
 
-            <!-- Champ code_insee remplacé par select -->
+            <!-- champ code_insee : sélection d’une commune depuis la BDD -->
             <div class="form-group">
-                <label for="code_insee">Commune</label>
-                <select name="code_insee" id="code_insee" required>
-                    <option value="">-- Choisir une commune --</option>
-                    <?php foreach ($communes as $c): ?>
-                        <option value="<?= $c['code_insee'] ?>"
-                            <?= ($installation['code_insee'] ?? '') === $c['code_insee'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($c['nom_commune']) ?> (<?= $c['code_insee'] ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <label for="code_insee">Code INSEE de la commune</label>
+                <input type="text" name="code_insee" id="code_insee"
+                       value="<?= htmlspecialchars($installation['code_insee'] ?? '') ?>" required>
             </div>
         </div>
 
+        <!-- boutons d’action -->
         <div class="form-actions">
             <button type="submit" class="bouton-installation"><?= $titre ?></button>
             <button type="button" id="btn-retour" class="bouton-installation">Retour à la liste</button>

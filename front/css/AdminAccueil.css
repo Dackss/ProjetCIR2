@@ -65,3 +65,38 @@ body {
 .admin-card p {
     font-size: 1.1rem;
 }
+
+@media screen and (max-width: 576px) {
+    .admin-header {
+        padding: 1rem;
+        text-align: left;
+    }
+
+    .admin-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .admin-header .btn {
+        position: static;
+        display: block;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .admin-content {
+        padding: 2rem 1rem;
+    }
+
+    .admin-card {
+        width: 100%;
+        padding: 1.5rem;
+    }
+
+    .admin-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .admin-card p {
+        font-size: 1rem;
+    }
+}

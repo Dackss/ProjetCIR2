@@ -50,3 +50,41 @@ th {
 .retour:hover {
     background-color: #ffb74d;
 }
+
+@media screen and (max-width: 576px) {
+    body {
+        padding: 1rem;
+    }
+
+    .container-detail {
+        padding: 1.2rem;
+        border-radius: 1rem;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    table {
+        font-size: 0.95rem;
+    }
+
+    th, td {
+        padding: 0.6rem;
+        display: block;
+        width: 100%;
+    }
+
+    th {
+        font-weight: bold;
+        color: #5d3c00;
+    }
+
+    .retour {
+        width: 100%;
+        text-align: center;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}

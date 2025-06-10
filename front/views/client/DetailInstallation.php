@@ -3,12 +3,26 @@ require_once __DIR__ . "/../../../back/core/Database.php";
 require_once __DIR__ . "/../../../back/models/InstallationModel.php";
 
 $id = $_GET['id'] ?? null;
+
 $model = new InstallationModel();
 $installation = $model->getById($id);
 
 if (!$installation) {
     echo "<p>Installation introuvable.</p>";
     exit;
+}
+$from = strtolower($_GET['from'] ?? '');
+// Déterminer la page de retour
+switch ($from) {
+    case 'client/carte':
+        $pageRetour = "index.php?page=Carte";
+        break;
+    case 'client/recherche':
+        $pageRetour = "index.php?page=Recherche";
+        break;
+    default:
+        $pageRetour = "index.php?page=Accueil";
+        break;
 }
 ?>
 
@@ -20,6 +34,7 @@ if (!$installation) {
     <link rel="stylesheet" href="css/detailInstallation.css">
 </head>
 <body>
+<input type="hidden" id="is-admin" value="1">
 <div class="container-detail">
     <h1>📍 Détail de l’installation #<?= $installation['id_installation'] ?></h1>
 
@@ -38,12 +53,7 @@ if (!$installation) {
         <tr><th>Longitude</th><td><?= $installation['longitude'] ?></td></tr>
     </table>
 
-    <?php
-    $from = $_GET['from'] ?? 'AdminCarte';
-    $cleanFrom = htmlspecialchars($from, ENT_QUOTES);
-    ?>
-    <a class="retour" href="index.php?page=<?= $cleanFrom ?>">← Retour</a>
-
+    <a class="retour" href="<?= htmlspecialchars($pageRetour) ?>">← Retour</a>
 </div>
 </body>
 </html>

@@ -123,3 +123,45 @@
         max-width: 300px;
     }
 }
+
+@media screen and (max-width: 576px) {
+    .page-installations {
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .page-installations h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .btn-group-installation {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+    }
+
+    .table-installations {
+        font-size: 0.9rem;
+        display: block;
+        overflow-x: auto;
+        border-radius: 8px;
+    }
+
+    .table-installations table {
+        width: 100%;
+    }
+
+    .pagination {
+        font-size: 1rem;
+    }
+
+    .pagination a {
+        padding: 6px 10px;
+    }
+
+    .pagination .ellipsis {
+        padding: 4px 6px;
+    }
+}

@@ -135,3 +135,51 @@
     }
 }
 
+@media screen and (max-width: 576px) {
+    .presentation-texte {
+        padding: 0.8rem;
+        margin: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .presentation-texte h2 {
+        font-size: 1.4rem;
+    }
+
+    .presentation-texte p {
+        font-size: 0.95rem;
+        max-width: 100%;
+    }
+
+    #carouselPresentation {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+
+    .carousel-slide {
+        padding: 0.5rem;
+    }
+
+    .section-stats {
+        padding: 2rem 0.5rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .section-stats h3 {
+        font-size: 1.4rem;
+    }
+
+    .section-stats .card {
+        margin-bottom: 1rem;
+    }
+
+    .section-stats .card h6 {
+        font-size: 0.9rem;
+    }
+
+    .section-stats .card p {
+        font-size: 1.1rem;
+    }
+}
+

@@ -52,7 +52,6 @@
     overflow: hidden;
 }
 
-/* Responsive */
 @media screen and (max-width: 768px) {
     .page-carte {
         padding: 1.5rem 1rem;
@@ -71,5 +70,29 @@
 
     #map {
         height: 60vh;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .page-carte h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    #filtre-carte {
+        gap: 1rem;
+        font-size: 1rem;
+        width: 100%;
+        padding: 0 0.5rem;
+    }
+
+    #filtre-carte select {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    #map {
+        height: 50vh;
+        border-radius: 8px;
     }
 }

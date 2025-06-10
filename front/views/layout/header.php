@@ -17,9 +17,9 @@
             <h1 class="h4 mb-0">Énergie Saucisse</h1>
         </div>
         <nav>
-            <a href="index.php?page=accueil">Accueil</a>
-            <a href="index.php?page=recherche">Recherche</a>
-            <a href="index.php?page=carte">Carte</a>
+            <a href="index.php?page=Accueil">Accueil</a>
+            <a href="index.php?page=Recherche">Recherche</a>
+            <a href="index.php?page=Carte">Carte</a>
             <a href="index.php?page=back-office/AdminConnexion">Connexion</a>
         </nav>
     </div>
