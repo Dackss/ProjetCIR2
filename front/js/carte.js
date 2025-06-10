@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("Referrer = ", document.referrer);
+
+    const isAdmin = document.getElementById("is-admin") !== null;
+    const detailPage = isAdmin ? "AdminDetail" : "DetailInstallation";
+
     const anneeSelect = document.getElementById("annee");
     const deptSelect = document.getElementById("departement");
     const form = document.getElementById("filtre-carte");
@@ -26,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 deptSelect.appendChild(opt);
             });
 
-            // 👉 Synchronise après le premier chargement
             const anneeInit = anneeSelect.value;
             const depInit = deptSelect.value;
             if (anneeInit && depInit) {
@@ -35,10 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => console.error("Erreur chargement des filtres :", err));
 
-
-    // MAJ dynamique des options
     function updateOptions(annee = null, departement = null) {
-        const url = new URL("..\/back/api/installations.php", window.location.href);
+        const url = new URL("../back/api/installations.php", window.location.href);
         url.searchParams.set("action", "options_dynamiques");
         if (annee) url.searchParams.set("annee", annee);
         if (departement) url.searchParams.set("departement", departement);
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (data.annees && data.annees.length > 0) {
+                if (data.annees?.length) {
                     const current = anneeSelect.value;
                     anneeSelect.innerHTML = "";
                     data.annees.forEach(a => {
@@ -60,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                if (data.departements && data.departements.length > 0) {
+                if (data.departements?.length) {
                     const current = deptSelect.value;
                     deptSelect.innerHTML = "";
                     data.departements.forEach(d => {
@@ -77,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => console.error("Erreur options dynamiques :", err));
     }
 
-    // Synchronisation dynamique
     anneeSelect.addEventListener("change", () => {
         updateOptions(anneeSelect.value, null);
     });
@@ -86,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateOptions(null, deptSelect.value);
     });
 
-    // Affichage carte
     function createMap(data) {
         const mapContainer = document.getElementById("map");
 
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .bindPopup(`
                         <strong>${lieu}</strong><br>
                         ${puissance}<br>
-                        <a href="index.php?page=detail&id=${install.id_installation}">Voir détail</a>
+                        <a href="index.php?page=${detailPage}&id=${install.id}&from=carte">Voir</a>
                     `);
 
                 bounds.push([lat, lon]);
@@ -136,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => map.invalidateSize(), 200);
     }
 
-    // Envoi du formulaire
     form.addEventListener("submit", e => {
         e.preventDefault();
         const annee = anneeSelect.value;
@@ -145,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`../back/api/installations.php?action=filtre&annee=${annee}&departement=${dep}`)
             .then(res => res.json())
             .then(data => {
-                if (!data || data.length === 0) {
+                if (!data?.length) {
                     alert("Aucune installation trouvée pour cette combinaison.");
                     return;
                 }

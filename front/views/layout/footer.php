@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="text-center mt-3">
-        <small>© 2024 Tous droits réservés<br>Thomas, Tom, Gustave (Groupe 7)</small>
+        <small>© 2024 Tous droits réservés<br>Tom - Thomas - Gustave (Groupe 7)</small>
     </div>
 </footer>
 

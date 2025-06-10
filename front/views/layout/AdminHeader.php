@@ -8,6 +8,7 @@
             <a href="index.php?page=back-office/AdminAccueil">Accueil</a>
             <a href="index.php?page=AdminInstallation">Installations</a>
             <a href="index.php?page=AdminCarte">Carte</a>
+            <a href="index.php?page=AdminRecherche">Recherche</a>
             <a href="index.php?page=AdminDeconnexion">Déconnexion</a>
         </nav>
     </div>

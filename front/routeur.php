@@ -1,16 +1,21 @@
 <?php
 $page = $_GET['page'] ?? 'client/accueil';
 
-if ($page === 'AdminAccueil') {
-    $page = 'back-office/AdminAccueil';
-} elseif ($page === 'AdminConnexion') {
-    $page = 'back-office/AdminConnexion';
-} elseif ($page === 'AdminInstallation') {
-    $page = 'back-office/AdminInstallation';
-} elseif ($page === 'AdminCarte') {
-    $page = 'back-office/AdminCarte';
-} elseif ($page === 'AdminDeconnexion') {
-    // ✅ NE RIEN FAIRE : laisse $page tel quel pour switch direct
+// Redirections automatiques simples
+$pagesDirectes = [
+    'AdminAccueil' => 'back-office/AdminAccueil',
+    'AdminConnexion' => 'back-office/AdminConnexion',
+    'AdminInstallation' => 'back-office/AdminInstallation',
+    'AdminDetail' => 'back-office/AdminDetail',
+    'AdminCarte' => 'back-office/AdminCarte',
+    'AdminRecherche' => 'back-office/AdminRecherche',
+    'AdminDeconnexion' => 'AdminDeconnexion',
+    'formulaire' => 'back-office/formulaire',
+    'formulaire_action' => 'back-office/traitement_formulaire'
+];
+
+if (isset($pagesDirectes[$page])) {
+    $page = $pagesDirectes[$page];
 } elseif (
     strpos($page, 'client/') !== 0 &&
     strpos($page, 'back/') !== 0 &&
@@ -19,8 +24,6 @@ if ($page === 'AdminAccueil') {
 ) {
     $page = 'client/' . $page;
 }
-
-
 
 switch ($page) {
     case 'client/accueil':
@@ -50,6 +53,27 @@ switch ($page) {
     case 'AdminDeconnexion':
         require_once __DIR__ . '/../back/controllers/AdminDeconnexionController.php';
         break;
+    case 'back-office/formulaire':
+        require_once __DIR__ . '/views/back-office/formulaire.php';
+        break;
+    case 'back-office/AdminRecherche':
+        require_once __DIR__ . '/../back/controllers/AdminRechercheController.php';
+        break;
+    case 'client/DetailInstallation':
+        require_once __DIR__ . '/../back/controllers/DetailController.php';
+        break;
+    case 'back-office/AdminDetail':
+        require_once __DIR__ . '/../back/controllers/AdminDetailController.php';
+        break;
+
+    case 'back-office/traitement_formulaire':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/views/back-office/traitement_formulaire.php';
+            exit;
+        } else {
+            echo "Méthode non autorisée.";
+            exit;
+        }
     default:
         echo "<h1>Page introuvable</h1>";
 }
