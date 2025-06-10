@@ -1,3 +1,6 @@
+<body>
+<input type="hidden" id="is-admin" value="1">
+
 <div class="page-carte">
     <h2>Carte des installations</h2>
 
@@ -19,7 +22,7 @@
 <link rel="stylesheet" href="css/carte.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 
-
 <!-- scripts -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="js/carte.js" defer></script>
+</body>

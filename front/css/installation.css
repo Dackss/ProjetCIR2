@@ -19,26 +19,35 @@
     text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
-.bouton-ajout {
-    display: block;
-    margin: 0 auto 2rem auto;
-    background: #cfd8dc;
-    color: #3b240b;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease;
-    text-align: center;
-    text-decoration: none;
-    width: fit-content;
+/* Zone boutons responsive */
+.page-installations .btn-group-installation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
-.bouton-ajout:hover {
+.bouton-installation {
+    display: inline-block;
+    padding: 12px 28px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'Chewy', sans-serif;
+    border-radius: 30px;
+    border: none;
+    color: #fff;
+    background: linear-gradient(135deg, #f4d06f, #ff8811);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.bouton-installation:hover {
     transform: scale(1.05);
-    background-color: #b0bec5;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
 }
 
 .table-installations {
@@ -48,6 +57,7 @@
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     table-layout: auto;
+    overflow-x: auto;
 }
 
 .table-installations th,
@@ -64,35 +74,11 @@
     font-weight: bold;
 }
 
-/* Responsive amélioré sans scroll */
-@media screen and (max-width: 768px) {
-    .table-installations th,
-    .table-installations td {
-        padding: 0.5rem;
-        font-size: 0.95rem;
-    }
-
-    .page-installations {
-        padding: 1.5rem 1rem;
-    }
-}
-
+/* Pagination */
 .pagination {
     margin-top: 1.5rem;
     text-align: center;
     font-size: 1.2rem;
-}
-
-.pagination a {
-    margin: 0 0.4rem;
-    color: #ff8811;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.pagination a.current {
-    color: #7c4d00;
-    text-decoration: underline;
 }
 
 .pagination a {
@@ -103,6 +89,7 @@
     border-radius: 4px;
     color: black;
     font-weight: bold;
+    text-decoration: none;
 }
 
 .pagination a.current {
@@ -115,4 +102,24 @@
     margin: 0 4px;
     padding: 4px 8px;
     color: #888;
+}
+
+/* Responsive table + layout */
+@media screen and (max-width: 768px) {
+    .page-installations {
+        padding: 1.5rem 1rem;
+    }
+
+    .table-installations th,
+    .table-installations td {
+        padding: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .bouton-installation {
+        font-size: 1rem;
+        padding: 10px 20px;
+        width: 100%;
+        max-width: 300px;
+    }
 }

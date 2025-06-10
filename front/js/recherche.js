@@ -124,22 +124,34 @@ document.addEventListener("DOMContentLoaded", () => {
                         <th>Surface (m²)</th>
                         <th>Puissance (Wc)</th>
                         <th>Localisation</th>
+                        <th>Détail</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
 
         data.forEach(item => {
+            // détection simple : formulaire a une classe "admin" ?
+            const estAdmin = form.classList.contains("admin");
+
+            const pageDetail = estAdmin
+                ? `AdminDetail&id=${item.id}&from=AdminRecherche`
+                : `client/DetailInstallation&id=${item.id}&from=client/recherche`;
+
             html += `
-                <tr>
-                    <td>${item.date}</td>
-                    <td>${item.nb_panneaux}</td>
-                    <td>${item.surface}</td>
-                    <td>${item.puissance}</td>
-                    <td>${item.localisation || '—'}</td>
-                </tr>
-            `;
+                    <tr>
+                        <td>${item.date}</td>
+                        <td>${item.nb_panneaux}</td>
+                        <td>${item.surface}</td>
+                        <td>${item.puissance}</td>
+                        <td>${item.localisation || '—'}</td>
+                        <td><a href="index.php?page=${pageDetail}">Voir</a></td>
+                    </tr>
+                `;
         });
+
+
+
 
         html += "</tbody></table>";
         resultats.innerHTML = html;

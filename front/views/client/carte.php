@@ -14,11 +14,9 @@
     <div id="map"></div>
 </div>
 
-<!-- feuilles de style -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 <link rel="stylesheet" href="css/footer-header.css">
 <link rel="stylesheet" href="css/carte.css">
 
-<!-- scripts -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="js/carte.js" defer></script>

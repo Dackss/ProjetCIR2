@@ -26,10 +26,11 @@
             <p><a href="index.php?page=AdminAccueil">Accueil</a></p>
             <p><a href="index.php?page=AdminInstallation">Installations</a></p>
             <p><a href="index.php?page=AdminCarte">Carte</a></p>
+            <p><a href="index.php?page=AdminRecherche">Recherche</a></p>
         </div>
     </div>
     <div class="text-center mt-3">
-        <small>© 2024 Tous droits réservés<br>Thomas, Tom, Gustave (Groupe 7)</small>
+        <small>© 2024 Tous droits réservés<br>Tom - Thomas - Gustave (Groupe 7)</small>
     </div>
 </footer>
 

@@ -21,6 +21,10 @@
             <h2>🗺️ Visualiser sur la Carte</h2>
             <p>Accédez à la carte des installations.</p>
         </a>
+        <a href="index.php?page=AdminRecherche" class="admin-card">
+            <h2>🔎 Lancer une recherche</h2>
+            <p>Filtrez les installations par critères.</p>
+        </a>
     </section>
 </main>
 </body>

@@ -30,10 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["action"]) && $_GET["ac
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"])) {
     switch ($_GET["action"]) {
         case "select_options":
-            echo json_encode([
-                "annees" => $model->getAnneesInstallation(),
-                "departements" => $model->getDepartementsAleatoires()
-            ]);
+            $annee = $_GET["annee"] ?? null;
+            echo json_encode($model->getOptionsDynamiques($annee, null));
             exit;
 
         case "options_recherche":
