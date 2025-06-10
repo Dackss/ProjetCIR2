@@ -1,3 +1,4 @@
+-- Suppression des tables si elles existent déjà (ordre inverse des dépendances)
 DROP TABLE IF EXISTS Installation;
 DROP TABLE IF EXISTS Commune;
 DROP TABLE IF EXISTS Département;
@@ -11,6 +12,7 @@ DROP TABLE IF EXISTS ModelePanneau;
 DROP TABLE IF EXISTS MarquePanneau;
 DROP TABLE IF EXISTS Admin;
 
+-- TABLES DE STRUCTURE GÉOGRAPHIQUE
 CREATE TABLE Région (
                         id_region VARCHAR(10) PRIMARY KEY,
                         nom_region VARCHAR(255)
@@ -32,6 +34,7 @@ CREATE TABLE Commune (
                          FOREIGN KEY (code_departement_Département) REFERENCES Département(code_departement)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- TABLES DES PANNEAUX
 CREATE TABLE MarquePanneau (
                                id_marque INT AUTO_INCREMENT PRIMARY KEY,
                                nom_marque VARCHAR(255)
@@ -51,11 +54,7 @@ CREATE TABLE Panneau (
                          FOREIGN KEY (id_modele_ModelePanneau) REFERENCES ModelePanneau(id_modele)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE Installateur (
-                              id_installateur INT AUTO_INCREMENT PRIMARY KEY,
-                              nom_installateur VARCHAR(255)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- TABLES DES ONDULEURS
 CREATE TABLE MarqueOnduleur (
                                 id_marque INT AUTO_INCREMENT PRIMARY KEY,
                                 nom_marque VARCHAR(255)
@@ -75,6 +74,13 @@ CREATE TABLE Onduleur (
                           FOREIGN KEY (id_modele_ModeleOnduleur) REFERENCES ModeleOnduleur(id_modele)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- TABLE DES INSTALLATEURS
+CREATE TABLE Installateur (
+                              id_installateur INT AUTO_INCREMENT PRIMARY KEY,
+                              nom_installateur VARCHAR(255)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- TABLE DES INSTALLATIONS
 CREATE TABLE Installation (
                               id_installation INT AUTO_INCREMENT PRIMARY KEY,
                               date_installation DATE,
@@ -99,6 +105,7 @@ CREATE TABLE Installation (
                               FOREIGN KEY (code_insee_Commune) REFERENCES Commune(code_insee)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- ADMIN DE CONNEXION
 CREATE TABLE Admin (
                        id_admin INT AUTO_INCREMENT PRIMARY KEY,
                        identifiant VARCHAR(100) NOT NULL UNIQUE,
