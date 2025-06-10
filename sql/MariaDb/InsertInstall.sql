@@ -167,3 +167,4 @@ WHERE si.id_onduleur IS NOT NULL
   AND si.id_installateur IS NOT NULL
   AND si.id_panneau IS NOT NULL;
 
+INSERT INTO Admin (identifiant, mot_de_passe) VALUES ('admin', 'tk78');

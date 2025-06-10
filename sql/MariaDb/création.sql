@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS ModeleOnduleur;
 DROP TABLE IF EXISTS MarqueOnduleur;
 DROP TABLE IF EXISTS ModelePanneau;
 DROP TABLE IF EXISTS MarquePanneau;
-
+DROP TABLE IF EXISTS Admin;
 
 CREATE TABLE Région (
                         id_region VARCHAR(10) PRIMARY KEY,
@@ -97,4 +97,10 @@ CREATE TABLE Installation (
                               FOREIGN KEY (id_installateur_Installateur) REFERENCES Installateur(id_installateur),
                               FOREIGN KEY (id_panneau_Panneau) REFERENCES Panneau(id_panneau),
                               FOREIGN KEY (code_insee_Commune) REFERENCES Commune(code_insee)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Admin (
+                       id_admin INT AUTO_INCREMENT PRIMARY KEY,
+                       identifiant VARCHAR(100) NOT NULL UNIQUE,
+                       mot_de_passe VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
