@@ -31,7 +31,7 @@ switch ($from) {
 <head>
     <meta charset="UTF-8">
     <title>Détail Installation</title>
-    <link rel="stylesheet" href="css/detailInstallation.css">
+    <link rel="stylesheet" href="front/css/detailInstallation.css">
 </head>
 <body>
 <input type="hidden" id="is-admin" value="1">

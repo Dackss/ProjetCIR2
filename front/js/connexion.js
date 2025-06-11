@@ -16,7 +16,7 @@ document.querySelector("form").addEventListener("submit", function (e) {
         .then(data => {
             // si les identifiants sont valides (success true), redirige vers la page d’accueil admin
             if (data.success) {
-                window.location.href = "index.php?page=AdminAccueil";
+                window.location.href = "index.php?page=back/AdminAccueil";
             } else {
                 // sinon, affiche un message d’erreur utile à l’utilisateur
                 alert(data.message || "Erreur de connexion"); // message personnalisé si dispo, sinon défaut

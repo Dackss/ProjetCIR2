@@ -79,7 +79,7 @@
 
     <div id="zone-formulaire" style="display: none;"></div>
 
-    <link rel="stylesheet" href="css/footer-header.css">
-    <link rel="stylesheet" href="css/installation.css">
-    <script src="js/installation.js"></script>
+    <link rel="stylesheet" href="front/css/footer-header.css">
+    <link rel="stylesheet" href="front/css/installation.css">
+    <script src="front/js/installation.js"></script>
 </div>

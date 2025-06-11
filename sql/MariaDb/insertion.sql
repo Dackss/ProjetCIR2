@@ -16,7 +16,7 @@ CREATE TABLE StagingCommune (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- On charge les données CSV dans la table staging
-LOAD DATA LOCAL INFILE 'C:/Users/to1ca/PhpstormProjects/TP_php/GitHub/ProjetCIR2/sql/MariaDb/communes-france-2024-limite.csv'
+LOAD DATA LOCAL INFILE 'C:/Users/dacks/PhpstormProjects/ProjetCIR2/sql/MariaDb/communes-france-2024-limite.csv'
     INTO TABLE StagingCommune
     FIELDS TERMINATED BY ';' ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
@@ -117,7 +117,7 @@ CREATE TABLE StagingInstall (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Chargement brut des données dans la table staging
-LOAD DATA LOCAL INFILE 'C:/Users/to1ca/PhpstormProjects/TP_php/GitHub/ProjetCIR2/sql/MariaDb/data_clean.csv'
+LOAD DATA LOCAL INFILE 'C:/Users/dacks/PhpstormProjects/ProjetCIR2/sql/MariaDb/data_clean.csv'
     INTO TABLE StagingInstall
     FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'

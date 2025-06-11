@@ -30,6 +30,6 @@
     <div id="pagination" class="pagination mt-3"></div>
 </div>
 
-<link rel="stylesheet" href="css/footer-header.css">
-<link rel="stylesheet" href="css/recherche.css">
-<script src="js/recherche.js"></script>
+<link rel="stylesheet" href="front/css/footer-header.css">
+<link rel="stylesheet" href="front/css/recherche.css">
+<script src="front/js/recherche.js"></script>

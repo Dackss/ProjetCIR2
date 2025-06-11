@@ -18,11 +18,11 @@
 </div>
 
 <!-- feuilles de style -->
-<link rel="stylesheet" href="css/footer-header.css">
-<link rel="stylesheet" href="css/carte.css">
+<link rel="stylesheet" href="front/css/footer-header.css">
+<link rel="stylesheet" href="front/css/carte.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 
 <!-- scripts -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="js/carte.js" defer></script>
+<script src="front/js/carte.js" defer></script>
 </body>

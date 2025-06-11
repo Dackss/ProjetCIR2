@@ -14,7 +14,7 @@ if ($action === 'modifier' && !isset($_GET['id'])) {
     // récupère les 100 premières installations pour info si besoin (non utilisé ici)
     $installations = $model->getAllPaginated([], 1, 100)['installations'];
     ?>
-    <link rel="stylesheet" href="css/formulaire.css">
+    <link rel="stylesheet" href="front/css/formulaire.css">
     <div class="formulaire-installation">
         <h2>Sélectionnez une installation</h2>
         <form id="select-installation-form">
@@ -69,7 +69,7 @@ $pdo = Database::getInstance();
 $communes = $pdo->query("SELECT code_insee, nom_commune FROM Commune ORDER BY nom_commune")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<link rel="stylesheet" href="css/formulaire.css">
+<link rel="stylesheet" href="front/css/formulaire.css">
 
 <div class="formulaire-installation">
     <h2><?= $titre ?></h2>

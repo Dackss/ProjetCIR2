@@ -21,13 +21,13 @@ $from = strtolower($_GET['from'] ?? '');
 // détermine dynamiquement la page vers laquelle revenir
 switch ($from) {
     case 'client/carte':
-        $pageRetour = "index.php?page=AdminCarte";
+        $pageRetour = "index.php?page=back/AdminCarte";
         break;
     case 'adminrecherche':
-        $pageRetour = "index.php?page=AdminRecherche";
+        $pageRetour = "index.php?page=back/AdminRecherche";
         break;
     default:
-        $pageRetour = "index.php?page=AdminAccueil";
+        $pageRetour = "index.php?page=back/AdminAccueil";
         break;
 }
 ?>
@@ -37,7 +37,7 @@ switch ($from) {
 <head>
     <meta charset="UTF-8">
     <title>Détail Installation</title>
-    <link rel="stylesheet" href="css/detailInstallation.css">
+    <link rel="stylesheet" href="front/css/detailInstallation.css">
 </head>
 <body>
 <input type="hidden" id="is-admin" value="1">

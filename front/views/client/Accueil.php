@@ -10,10 +10,10 @@
 
         <div id="carouselPresentation" class="my-5">
             <div class="carousel-track">
-                <div class="carousel-slide"><img src="images/slide4.png" alt="Slide 1"></div>
-                <div class="carousel-slide"><img src="images/slide5.png" alt="Slide 2"></div>
-                <div class="carousel-slide"><img src="images/slide3.png" alt="Slide 3"></div>
-                <div class="carousel-slide"><img src="images/slide1.png" alt="Slide 3"></div>
+                <div class="carousel-slide"><img src="front/images/slide4.png" alt="Slide 1"></div>
+                <div class="carousel-slide"><img src="front/images/slide5.png" alt="Slide 2"></div>
+                <div class="carousel-slide"><img src="front/images/slide3.png" alt="Slide 3"></div>
+                <div class="carousel-slide"><img src="front/images/slide1.png" alt="Slide 3"></div>
 
             </div>
         </div>
@@ -68,8 +68,8 @@
             </div>
         </div>
     </div>
-    <link rel="stylesheet" href="css/footer-header.css">
-    <link rel="stylesheet" href="css/accueil.css">
+    <link rel="stylesheet" href="front/css/footer-header.css">
+    <link rel="stylesheet" href="front/css/accueil.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800&display=swap" rel="stylesheet">
     <script src="js/carousel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
