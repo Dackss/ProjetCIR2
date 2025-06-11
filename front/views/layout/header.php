@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/footer-header.css">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 <header class="header">
     <div class="d-flex justify-content-between align-items-center w-100 px-4">
         <div class="d-flex align-items-center">
