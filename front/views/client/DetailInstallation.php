@@ -25,15 +25,6 @@ switch ($from) {
         break;
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Détail Installation</title>
-    <link rel="stylesheet" href="css/detailInstallation.css">
-</head>
-<body>
 <input type="hidden" id="is-admin" value="1">
 <div class="container-detail">
     <h1>📍 Détail de l’installation #<?= $installation['id_installation'] ?></h1>
@@ -55,5 +46,6 @@ switch ($from) {
 
     <a class="retour" href="<?= htmlspecialchars($pageRetour) ?>">← Retour</a>
 </div>
+</main>
 </body>
 </html>

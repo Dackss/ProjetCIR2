@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 totalPages = Math.ceil(data.total / parPage); // calcule nombre total de pages
                 afficherResultats(data.donnees); // affiche le tableau
                 afficherPagination(); // met à jour les liens de navigation
+                resultats.style.display = "block";
             });
     });
 

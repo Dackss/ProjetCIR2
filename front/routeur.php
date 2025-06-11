@@ -43,6 +43,7 @@ switch ($page) {
         require_once __DIR__ . '/../back/controllers/CarteController.php';
         break;
     case 'client/DetailInstallation':
+		echo '	<link rel="stylesheet" href="css/detailInstallation.css">';
         require_once __DIR__ . '/../back/controllers/DetailController.php';
         break;
 
