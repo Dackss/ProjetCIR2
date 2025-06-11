@@ -1,25 +1,33 @@
-# Énergie Saucisse
+# Projet CIR2 - Gestion des Installations Photovoltaïques
 
-Ce dépôt contient un petit projet PHP développé durant la deuxième année du projet CIR2. Son but est de proposer une interface web permettant d'explorer des installations photovoltaïques. On y trouve un front office pour les visiteurs avec une carte et des fonctions de recherche, ainsi qu'un back office pour que les administrateurs puissent gérer les installations.
+Ce projet permet de gérer et visualiser des installations photovoltaïques via une interface web (PHP/JS) et une API REST connectée à une base de données MariaDB.
 
-## Structure du dépôt
+## 📁 Structure
 
-- `front/` – Racine web publique avec `index.php`, les fichiers CSS/JS et les différentes vues.
-- `back/` – Code PHP des contrôleurs, modèles et petite API REST dans `back/api`.
-- `back/config/config.php` – Fichier de configuration des identifiants de la base de données.
-- `bootstrap/` – Copie locale de Bootstrap utilisée par l'interface.
-- `sql/` – Scripts SQL de création de la base pour MariaDB et PostgreSQL.
-- `data/` – Exemples de données CSV.
+- `front/` : Interface utilisateur (HTML, CSS, JS, PHP)
+- `back/` : Contrôleurs, modèles et API REST (PHP)
+- `sql/MariaDb/` : Scripts SQL de création et insertion
+- `data/` : Données sources et scripts de nettoyage
+- `README.md` : Ce fichier
 
-## Configuration de la base de données
+## 🚀 Lancer le projet
 
-Modifiez `back/config/config.php` pour renseigner les constantes `DB_HOST`, `DB_NAME`, `DB_USER` et `DB_PASS` selon votre serveur local.
+1. Importer les scripts SQL dans MariaDB :
+   ```bash
+   mysql -u root -p projetCIR2 < sql/MariaDb/création.sql
+   mysql -u root -p projetCIR2 < sql/MariaDb/insertion.sql
+   ```
 
-### Création de la base
+2. Lancer le serveur de votre choix :
+ 
 
-Deux jeux de scripts sont fournis selon votre SGBD :
+3. Accéder à votre serveur
 
-- MariaDB : `sql/MariaDb/create_db.sql` puis `sql/MariaDb/creation_tables.sql`.
-- PostgreSQL : `sql/Postgresql/create_db.sql` puis `sql/Postgresql/creation_tables.sql`.
+## 🔐 Partie Admin
 
-Exécutez ces scripts avec votre client SQL afin de créer l'utilisateur, la base et les tables.
+- Connexion via `/index.php?page=AdminConnexion`
+- Gestion des installations, recherche filtrée.
+
+## 🔗 Dépôt GitHub
+
+[https://github.com/Dackss/ProjetCIR2](https://github.com/Dackss/ProjetCIR2)
