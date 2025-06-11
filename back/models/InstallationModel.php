@@ -294,7 +294,7 @@ class InstallationModel
             "departements" => $departements
         ];
     }
-    public function getAllPaginated($filtres = [], $page = 1, $parPage = 10)
+    public function getAllPaginated($filtres = [], $page = 1, $parPage = 100)
     {
         $offset = ($page - 1) * $parPage;
 

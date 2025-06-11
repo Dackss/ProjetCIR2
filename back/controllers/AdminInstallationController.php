@@ -13,7 +13,7 @@ $filtres = [
 
 // pagination
 $page = isset($_GET['p']) ? max(1, intval($_GET['p'])) : 1;
-$parPage = 10;
+$parPage = 100;
 
 $data = $model->getAllPaginated($filtres, $page, $parPage);
 
