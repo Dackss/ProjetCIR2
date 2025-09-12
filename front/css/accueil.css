@@ -103,6 +103,54 @@
     color: #3b240b;
 }
 
+
+.rotating-image-container {
+    width: 100%;
+}
+
+.rotating-image {
+    width: 200px;
+    height: auto;
+    animation: spinScale 6s linear infinite;
+    transition: transform 0.3s ease-in-out;
+}
+@keyframes discoBackground {
+    0% { background-color: #ff0040; }
+    20% { background-color: #ff8000; }
+    40% { background-color: #ffff00; }
+    60% { background-color: #00ff00; }
+    80% { background-color: #00ffff; }
+    100% { background-color: #ff00ff; }
+}
+
+.disco-mode {
+    animation: discoBackground 3s infinite linear;
+    transition: background-color 0.5s ease;
+}
+
+
+@keyframes spinScale {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(90deg) scale(5);
+    }
+    50% {
+        transform: rotate(180deg) scale(1);
+    }
+    75% {
+        transform: rotate(270deg) scale(0.2);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+
+
+
+
 @media screen and (max-width: 768px) {
     .presentation-texte {
         padding: 1rem;
@@ -182,4 +230,3 @@
         font-size: 1.1rem;
     }
 }
-
